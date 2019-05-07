@@ -7,6 +7,7 @@ pub fn build(b: *Builder) void {
     const client = b.addExecutable("q2-client", null);
     const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
     const ref_gl = b.addSharedLibrary("ref_gl", null, b.version(3, 19, 0));
+    const ref_soft = b.addSharedLibrary("ref_soft", null, b.version(3, 19, 0));
 
     server.setBuildMode(mode);
     client.setBuildMode(mode);
@@ -135,6 +136,30 @@ pub fn build(b: *Builder) void {
         "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c"
     };
+    const ref_soft_sources = [][]const u8 {
+        "src/ref_soft/r_aclip.c",
+        "src/ref_soft/r_alias.c",
+        "src/ref_soft/r_bsp.c",
+        "src/ref_soft/r_draw.c",
+        "src/ref_soft/r_edge.c",
+        "src/ref_soft/r_image.c",
+        "src/ref_soft/r_light.c",
+        "src/ref_soft/r_main.c",
+        "src/ref_soft/r_misc.c",
+        "src/ref_soft/r_model.c",
+        "src/ref_soft/r_part.c",
+        "src/ref_soft/r_poly.c",
+        "src/ref_soft/r_polyse.c",
+        "src/ref_soft/r_rast.c",
+        "src/ref_soft/r_scan.c",
+        "src/ref_soft/r_sprite.c",
+        "src/ref_soft/r_surf.c",
+        "src/game/q_shared.c",
+        "src/platform/linux/q_shlinux.c",
+        "src/platform/linux/glob.c",
+    };
+
+
     for (client_sources) |source| {
         client.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
@@ -143,6 +168,9 @@ pub fn build(b: *Builder) void {
     }
     for (ref_gl_sources) |source| {
         ref_gl.addCSourceFile(source, [][]const u8{"-std=c99"});
+    }
+    for (ref_soft_sources) |source| {
+        ref_soft.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
     client.linkSystemLibrary("c");
     game.linkSystemLibrary("c");
