@@ -24,6 +24,7 @@ pub fn build(b: *Builder) void {
         "src/client/cl_input.c",
         "src/client/cl_inv.c",
         "src/client/cl_main.c",
+        "src/client/cl_newfx.c",
         "src/client/cl_parse.c",
         "src/client/cl_pred.c",
         "src/client/cl_tent.c",
@@ -130,7 +131,7 @@ pub fn build(b: *Builder) void {
         //"src/linux/gl_fxmesa.c",
         //"src/ref_gl/rw_in_svgalib.c",
         "src/game/q_shared.c",
-        //"src/linux/q_shlinux.c",
+        "src/linux/q_shlinux.c",
         "src/platform/linux/glob.c"
     };
     for (client_sources) |source| {
