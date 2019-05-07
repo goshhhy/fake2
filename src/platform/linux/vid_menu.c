@@ -1,5 +1,5 @@
-#include "../client/client.h"
-#include "../client/qmenu.h"
+#include "../../client/client.h"
+#include "../../client/qmenu.h"
 
 #define REF_SOFT	0
 #define REF_SOFTX11	1

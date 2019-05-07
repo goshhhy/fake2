@@ -14,7 +14,7 @@
 
 #include <linux/cdrom.h>
 
-#include "../client/client.h"
+#include "../../client/client.h"
 
 static qboolean cdValid = false;
 static qboolean	playing = false;

@@ -20,7 +20,7 @@
 
 #include <dlfcn.h>
 
-#include "../qcommon/qcommon.h"
+#include "../../qcommon/qcommon.h"
 
 #include "../linux/rw_linux.h"
 
