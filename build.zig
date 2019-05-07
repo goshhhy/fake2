@@ -177,6 +177,7 @@ pub fn build(b: *Builder) void {
     ref_gl.linkSystemLibrary("c");
     ref_gl.linkSystemLibrary("GL");
     ref_gl.linkSystemLibrary("GLU");
+    ref_soft.linkSystemLibrary("c");
 
     //const run_step = b.step("run", "Run the app");
     //run_step.dependOn(&run_cmd.step);
@@ -184,5 +185,6 @@ pub fn build(b: *Builder) void {
     b.default_step.dependOn(&client.step);
     b.default_step.dependOn(&game.step);
     b.default_step.dependOn(&ref_gl.step);
+    b.default_step.dependOn(&ref_soft.step);
     //b.installArtifact(exe);
 }
