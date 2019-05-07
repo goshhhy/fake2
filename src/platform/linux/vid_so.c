@@ -203,15 +203,15 @@ qboolean VID_LoadRefresh( char *name )
 	Com_Printf( "------- Loading %s -------\n", name );
 
 	if ((fp = fopen(SO_FILE, "r")) == NULL) {
-		Com_Printf( "LoadLibrary(\"%s\") failed: can't open " SO_FILE " (required for location of ref libraries)\n", name);
-		return false;
+		Com_Printf( "LoadLibrary(\"%s\") warning: can't open " SO_FILE " (required for location of ref libraries)\n", name);
+	} else {
+		fgets(fn, sizeof(fn), fp);
+		if (*fn && fn[strlen(fn) - 1] == '\n')
+			fn[strlen(fn) - 1] = 0;
+		fclose(fp);
 	}
-	fgets(fn, sizeof(fn), fp);
-	fclose(fp);
-	if (*fn && fn[strlen(fn) - 1] == '\n')
-		fn[strlen(fn) - 1] = 0;
-
-	strcat(fn, "/");
+	
+	strcat(fn, "./");
 	strcat(fn, name);
 
 	// permission checking

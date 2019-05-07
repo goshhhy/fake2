@@ -35,6 +35,11 @@ qboolean stdin_active = true;
 // General routines
 // =======================================================================
 
+int stricmp (char *s1, char *s2)
+{
+	return Q_stricmp (s1, s2);
+}
+
 void Sys_ConsoleOutput (char *string)
 {
 	if (nostdout && nostdout->value)

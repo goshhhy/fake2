@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE 500
+
 #include <sys/types.h>
 #include <errno.h>
 #include <stdio.h>
@@ -6,10 +8,11 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <ctype.h>
 
 #include "../linux/glob.h"
 
-#include "../qcommon/qcommon.h"
+#include "../../qcommon/qcommon.h"
 
 //===============================================================================
 
@@ -23,7 +26,7 @@ void *Hunk_Begin (int maxsize)
 	maxhunksize = maxsize + sizeof(int);
 	curhunksize = 0;
 	membase = mmap(0, maxhunksize, PROT_READ|PROT_WRITE, 
-		MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+		MAP_PRIVATE, -1, 0);
 	if (membase == NULL || membase == (byte *)-1)
 		Sys_Error("unable to virtual allocate %d bytes", maxsize);
 

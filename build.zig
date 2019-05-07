@@ -60,6 +60,7 @@ pub fn build(b: *Builder) void {
         //"src/linux/snd_linux.c",
         "src/platform/null/snddma_null.c",
         "src/platform/linux/sys_linux.c",
+        "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c",
         "src/platform/linux/net_udp.c",
         "src/game/q_shared.c",
@@ -131,7 +132,7 @@ pub fn build(b: *Builder) void {
         //"src/linux/gl_fxmesa.c",
         //"src/ref_gl/rw_in_svgalib.c",
         "src/game/q_shared.c",
-        "src/linux/q_shlinux.c",
+        "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c"
     };
     for (client_sources) |source| {
