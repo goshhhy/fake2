@@ -5,8 +5,9 @@ pub fn build(b: *Builder) void {
 
     const server = b.addExecutable("q2-server", null);
     const client = b.addExecutable("q2-client", null);
-    const game = b.addSharedLibrary("game", null, b.version(0, 3, 18));
-    
+    const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
+    const ref_gl = b.addSharedLibrary("ref_gl", null, b.version(3, 19, 0));
+
     server.setBuildMode(mode);
     client.setBuildMode(mode);
     game.setBuildMode(mode);
@@ -17,7 +18,51 @@ pub fn build(b: *Builder) void {
         "cmd.o"
     };
     const client_sources = [][]const u8 {
-        ""
+    "src/client/cl_cin.c",
+    "src/client/cl_ents.c",
+    "src/client/cl_fx.c",
+    "src/client/cl_input.c",
+    "src/client/cl_inv.c",
+    "src/client/cl_main.c",
+    "src/client/cl_parse.c",
+    "src/client/cl_pred.c",
+    "src/client/cl_tent.c",
+    "src/client/cl_scrn.c",
+    "src/client/cl_view.c",
+    "src/client/console.c",
+    "src/client/keys.c",
+    "src/client/menu.c",
+    "src/client/snd_dma.c",
+    "src/client/snd_mem.c",
+    "src/client/snd_mix.c",
+    "src/client/qmenu.c",
+    "src/game/m_flash.c",
+    "src/qcommon/cmd.c",
+    "src/qcommon/cmodel.c",
+    "src/qcommon/common.c",
+    "src/qcommon/crc.c",
+    "src/qcommon/cvar.c",
+    "src/qcommon/files.c",
+    "src/qcommon/md4.c",
+    "src/qcommon/net_chan.c",
+    "src/server/sv_ccmds.c",
+    "src/server/sv_ents.c",
+    "src/server/sv_game.c",
+    "src/server/sv_init.c",
+    "src/server/sv_main.c",
+    "src/server/sv_send.c",
+    "src/server/sv_user.c",
+    "src/server/sv_world.c",
+    "src/linux/cd_linux.c",
+    "src/linux/vid_menu.c",
+    "src/linux/vid_so.c",
+    //"src/linux/snd_linux.c",
+    "src/null/snddma_null.c",
+    "src/linux/sys_linux.c",
+    "src/linux/glob.c",
+    "src/linux/net_udp.c",
+    "src/game/q_shared.c",
+    "src/qcommon/pmove.c",
     };
     const server_sources = [][]const u8 {
 
@@ -71,15 +116,43 @@ pub fn build(b: *Builder) void {
         "src/game/q_shared.c",
         "src/game/m_flash.c",
     };
-
+    const ref_gl_sources = [][]const u8 {
+        "src/ref_gl/gl_draw.c",
+        "src/ref_gl/gl_image.c",
+        "src/ref_gl/gl_light.c",
+        "src/ref_gl/gl_mesh.c",
+        "src/ref_gl/gl_model.c",
+        "src/ref_gl/gl_rmain.c",
+        "src/ref_gl/gl_rmisc.c",
+        "src/ref_gl/gl_rsurf.c",
+        "src/ref_gl/gl_warp.c",
+        "src/linux/qgl_linux.c",
+        //"src/linux/gl_fxmesa.c",
+        //"src/ref_gl/rw_in_svgalib.c",
+        "src/game/q_shared.c",
+        //"src/linux/q_shlinux.c",
+        "src/linux/glob.c"
+    };
+    for (client_sources) |source| {
+        client.addCSourceFile(source, [][]const u8{"-std=c99"});
+    }
     for (gamelib_sources) |source| {
         game.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
+    for (ref_gl_sources) |source| {
+        ref_gl.addCSourceFile(source, [][]const u8{"-std=c99"});
+    }
+    client.linkSystemLibrary("c");
     game.linkSystemLibrary("c");
+    ref_gl.linkSystemLibrary("c");
+    ref_gl.linkSystemLibrary("GL");
+    ref_gl.linkSystemLibrary("GLU");
 
     //const run_step = b.step("run", "Run the app");
     //run_step.dependOn(&run_cmd.step);
 
+    b.default_step.dependOn(&client.step);
     b.default_step.dependOn(&game.step);
+    b.default_step.dependOn(&ref_gl.step);
     //b.installArtifact(exe);
 }

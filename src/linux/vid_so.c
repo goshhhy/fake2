@@ -186,7 +186,6 @@ qboolean VID_LoadRefresh( char *name )
 	GetRefAPI_t	GetRefAPI;
 	char	fn[MAX_OSPATH];
 	struct stat st;
-	extern uid_t saved_euid;
 	FILE *fp;
 	
 	if ( reflib_active )
@@ -202,9 +201,6 @@ qboolean VID_LoadRefresh( char *name )
 	}
 
 	Com_Printf( "------- Loading %s -------\n", name );
-
-	//regain root
-	seteuid(saved_euid);
 
 	if ((fp = fopen(SO_FILE, "r")) == NULL) {
 		Com_Printf( "LoadLibrary(\"%s\") failed: can't open " SO_FILE " (required for location of ref libraries)\n", name);
