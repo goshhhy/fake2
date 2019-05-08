@@ -2,3 +2,7 @@ baseq2/
 zig-cache/
 .vscode/
 vgcore.*
+lib*.so
+lib*.so.*
+q2-client
+q2-server
