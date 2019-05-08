@@ -181,11 +181,11 @@ pub fn build(b: *Builder) void {
         "src/ref_soft/r_sprite.c",
         "src/ref_soft/r_surf.c",
         "src/game/q_shared.c",
-        "src/platform/linux/rw_x11.c",
         "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c",
     };
     const ref_sdl_zig_sources = [][]const u8 {
+        "src/platform/zignull/swimp_null.zig"
     };
 
     for (client_c_sources) |source| {
@@ -205,6 +205,8 @@ pub fn build(b: *Builder) void {
     }
     for (ref_sdl_zig_sources) |source| {
         const obj = b.addObject(source, source);
+        obj.linkSystemLibrary("c");
+        obj.addIncludeDir("./src/");
         ref_sdl.addObject(obj);
     }
 
