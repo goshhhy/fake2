@@ -13,6 +13,8 @@
 ** SWimp_SwitchFullscreen
 */
 
+#define _POSIX_C_SOURCE 199309
+
 #include <ctype.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -30,8 +32,8 @@
 #include <X11/keysym.h>
 #include <X11/extensions/XShm.h>
 
-#include "../ref_soft/r_local.h"
-#include "../client/keys.h"
+#include "../../ref_soft/r_local.h"
+#include "../../client/keys.h"
 #include "../linux/rw_linux.h"
 
 /*****************************************************************************/

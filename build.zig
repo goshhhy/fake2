@@ -8,6 +8,8 @@ pub fn build(b: *Builder) void {
     const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
     const ref_gl = b.addSharedLibrary("ref_gl", null, b.version(3, 19, 0));
     const ref_soft = b.addSharedLibrary("ref_soft", null, b.version(3, 19, 0));
+    const ref_sdl = b.addSharedLibrary("ref_sdl", null, b.version(3, 19, 0));
+
 
     server.setBuildMode(mode);
     client.setBuildMode(mode);
@@ -15,10 +17,10 @@ pub fn build(b: *Builder) void {
 
     //const run_cmd = exe.run();
 
-    const common_sources = [][]const u8 {
+    const common_c_sources = [][]const u8 {
         "cmd.o"
     };
-    const client_sources = [][]const u8 {
+    const client_c_sources = [][]const u8 {
         "src/client/cl_cin.c",
         "src/client/cl_ents.c",
         "src/client/cl_fx.c",
@@ -67,10 +69,10 @@ pub fn build(b: *Builder) void {
         "src/game/q_shared.c",
         "src/qcommon/pmove.c",
     };
-    const server_sources = [][]const u8 {
+    const server_c_sources = [][]const u8 {
 
     };
-    const gamelib_sources = [][]const u8 {
+    const gamelib_c_sources = [][]const u8 {
         "src/game/g_ai.c",
         "src/game/p_client.c",
         "src/game/g_cmds.c",
@@ -119,7 +121,7 @@ pub fn build(b: *Builder) void {
         "src/game/q_shared.c",
         "src/game/m_flash.c",
     };
-    const ref_gl_sources = [][]const u8 {
+    const ref_gl_c_sources = [][]const u8 {
         "src/ref_gl/gl_draw.c",
         "src/ref_gl/gl_image.c",
         "src/ref_gl/gl_light.c",
@@ -136,7 +138,7 @@ pub fn build(b: *Builder) void {
         "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c"
     };
-    const ref_soft_sources = [][]const u8 {
+    const ref_soft_c_sources = [][]const u8 {
         "src/ref_soft/r_aclip.c",
         "src/ref_soft/r_alias.c",
         "src/ref_soft/r_bsp.c",
@@ -155,29 +157,68 @@ pub fn build(b: *Builder) void {
         "src/ref_soft/r_sprite.c",
         "src/ref_soft/r_surf.c",
         "src/game/q_shared.c",
+        "src/platform/linux/rw_x11.c",
         "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c",
     };
 
+    const ref_sdl_c_sources = [][]const u8 {
+        "src/ref_soft/r_aclip.c",
+        "src/ref_soft/r_alias.c",
+        "src/ref_soft/r_bsp.c",
+        "src/ref_soft/r_draw.c",
+        "src/ref_soft/r_edge.c",
+        "src/ref_soft/r_image.c",
+        "src/ref_soft/r_light.c",
+        "src/ref_soft/r_main.c",
+        "src/ref_soft/r_misc.c",
+        "src/ref_soft/r_model.c",
+        "src/ref_soft/r_part.c",
+        "src/ref_soft/r_poly.c",
+        "src/ref_soft/r_polyse.c",
+        "src/ref_soft/r_rast.c",
+        "src/ref_soft/r_scan.c",
+        "src/ref_soft/r_sprite.c",
+        "src/ref_soft/r_surf.c",
+        "src/game/q_shared.c",
+        "src/platform/linux/rw_x11.c",
+        "src/platform/linux/q_shlinux.c",
+        "src/platform/linux/glob.c",
+    };
+    const ref_sdl_zig_sources = [][]const u8 {
+    };
 
-    for (client_sources) |source| {
+    for (client_c_sources) |source| {
         client.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
-    for (gamelib_sources) |source| {
+    for (gamelib_c_sources) |source| {
         game.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
-    for (ref_gl_sources) |source| {
+    for (ref_gl_c_sources) |source| {
         ref_gl.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
-    for (ref_soft_sources) |source| {
+    for (ref_soft_c_sources) |source| {
         ref_soft.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
+    for (ref_sdl_c_sources) |source| {
+        ref_sdl.addCSourceFile(source, [][]const u8{"-std=c99"});
+    }
+    for (ref_sdl_zig_sources) |source| {
+        const obj = b.addObject(source, source);
+        ref_sdl.addObject(obj);
+    }
+
+
     client.linkSystemLibrary("c");
     game.linkSystemLibrary("c");
     ref_gl.linkSystemLibrary("c");
     ref_gl.linkSystemLibrary("GL");
     ref_gl.linkSystemLibrary("GLU");
     ref_soft.linkSystemLibrary("c");
+    ref_soft.linkSystemLibrary("X11");
+    ref_sdl.linkSystemLibrary("c");
+    ref_sdl.linkSystemLibrary("X11");
+    ref_sdl.linkSystemLibrary("SDL2");
 
     //const run_step = b.step("run", "Run the app");
     //run_step.dependOn(&run_cmd.step);
@@ -186,5 +227,6 @@ pub fn build(b: *Builder) void {
     b.default_step.dependOn(&game.step);
     b.default_step.dependOn(&ref_gl.step);
     b.default_step.dependOn(&ref_soft.step);
+    b.default_step.dependOn(&ref_sdl.step);
     //b.installArtifact(exe);
 }
