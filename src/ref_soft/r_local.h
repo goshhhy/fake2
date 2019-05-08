@@ -473,7 +473,6 @@ extern byte             r_warpbuffer[WARP_WIDTH * WARP_HEIGHT];
 extern float    scale_for_mip;
 
 extern qboolean         d_roverwrapped;
-extern surfcache_t      *sc_rover;
 extern surfcache_t      *d_initial_rover;
 
 extern float    d_sdivzstepu, d_tdivzstepu, d_zistepu;
@@ -664,11 +663,6 @@ extern void R_RotateBmodel (void);
 extern int      c_faceclip;
 extern int      r_polycount;
 extern int      r_wholepolycount;
-
-extern int                      ubasestep, errorterm, erroradjustup, erroradjustdown;
-
-extern fixed16_t        sadjust, tadjust;
-extern fixed16_t        bbextents, bbextentt;
 
 extern mvertex_t        *r_ptverts, *r_ptvertsmax;
 
