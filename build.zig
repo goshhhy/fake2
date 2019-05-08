@@ -1,8 +1,8 @@
 const Builder = @import("std").build.Builder;
 
 const ZigSource = struct {
-    name: []u8,
-    path: []u8,
+    name: []const u8,
+    path: []const u8,
 };
 
 pub fn build(b: *Builder) void {
@@ -15,6 +15,9 @@ pub fn build(b: *Builder) void {
     const ref_soft = b.addSharedLibrary("ref_soft", null, b.version(3, 19, 0));
     const ref_sdl = b.addSharedLibrary("ref_sdl", null, b.version(3, 19, 0));
 
+    client.setOutputDir("./");
+    game.setOutputDir("./");
+    ref_sdl.setOutputDir("./");
 
     server.setBuildMode(mode);
     client.setBuildMode(mode);
@@ -208,13 +211,14 @@ pub fn build(b: *Builder) void {
     for (ref_sdl_c_sources) |source| {
         ref_sdl.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
+
+    // add zig sources for ref_sdl
     for (ref_sdl_zig_sources) |source| {
-        const obj = b.addObject(source, source);
+        const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
         obj.addIncludeDir("./src/");
         ref_sdl.addObject(obj);
     }
-
 
     client.linkSystemLibrary("c");
     game.linkSystemLibrary("c");
