@@ -1,5 +1,10 @@
 const Builder = @import("std").build.Builder;
 
+const ZigSource = struct {
+    name: []u8,
+    path: []u8,
+};
+
 pub fn build(b: *Builder) void {
     const mode = b.standardReleaseOptions();
 
@@ -184,8 +189,8 @@ pub fn build(b: *Builder) void {
         "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c",
     };
-    const ref_sdl_zig_sources = [][]const u8 {
-        "src/platform/zignull/swimp_null.zig"
+    const ref_sdl_zig_sources = []ZigSource {
+        ZigSource { .name = "swimp_null", .path = "src/platform/zignull/swimp_null.zig" },
     };
 
     for (client_c_sources) |source| {

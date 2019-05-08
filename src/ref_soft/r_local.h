@@ -473,7 +473,6 @@ extern byte             r_warpbuffer[WARP_WIDTH * WARP_HEIGHT];
 extern float    scale_for_mip;
 
 extern qboolean         d_roverwrapped;
-extern surfcache_t      *sc_rover;
 extern surfcache_t      *d_initial_rover;
 
 extern float    d_sdivzstepu, d_tdivzstepu, d_zistepu;
