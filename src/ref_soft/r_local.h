@@ -665,11 +665,6 @@ extern int      c_faceclip;
 extern int      r_polycount;
 extern int      r_wholepolycount;
 
-extern int                      ubasestep, errorterm, erroradjustup, erroradjustdown;
-
-extern fixed16_t        sadjust, tadjust;
-extern fixed16_t        bbextents, bbextentt;
-
 extern mvertex_t        *r_ptverts, *r_ptvertsmax;
 
 extern float                    entity_rotation[3][3];
