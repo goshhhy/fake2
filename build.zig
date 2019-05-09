@@ -59,8 +59,6 @@ pub fn build(b: *Builder) void {
         "src/server/sv_user.c",
         "src/server/sv_world.c",
         "src/platform/linux/cd_linux.c",
-        "src/platform/zignull/vid_null.zig",
-        "src/platform/linux/vid_so.c",
         //"src/linux/snd_linux.c",
         "src/platform/null/snddma_null.c",
         "src/platform/linux/sys_linux.c",

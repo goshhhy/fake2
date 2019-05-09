@@ -596,8 +596,6 @@ typedef struct
 	byte		reliable_buf[MAX_MSGLEN-16];	// unacked reliable message
 } netchan_t;
 
-extern	netadr_t	net_from;
-extern	sizebuf_t	net_message;
 extern	byte		net_message_buffer[MAX_MSGLEN];
 
 

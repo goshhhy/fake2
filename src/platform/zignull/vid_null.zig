@@ -3,12 +3,12 @@
 
 const c = @cImport(@cInclude("client/client.h"));
 
-var viddef: c.viddef_t = undefined;
-var re: c.refexport_t = undefined;
+export var viddef: c.viddef_t = undefined;
+export var re: c.refexport_t = undefined;
 
 extern fn GetRefAPI (rimp: c.refimport_t) c.refexport_t;
 
-export fn VID_NewWindow (width: i32, height: i32) void {
+export fn VID_NewWindow (width: c_int, height: c_int) void {
         viddef.width = width;
         viddef.height = height;
 }
@@ -38,7 +38,7 @@ const vid_modes = []VidMode {
     VidMode { .desc = "Mode 16: 1920x1080 [16:9]",  .width = 1920, .height = 1080, .mode = 16 },
 };
 
-export fn VID_GetModeInfo( width: *i32, height: *i32, mode: i32 ) bool {
+export fn VID_GetModeInfo( width: [*c]c_int, height: [*c]c_int, mode: c_int ) c.qboolean {
     if ( mode < 0 or mode >= 16 ) {
         return false;
     }
@@ -47,6 +47,25 @@ export fn VID_GetModeInfo( width: *i32, height: *i32, mode: i32 ) bool {
     height.* = vid_modes[@intCast(usize,mode)].height;
 
     return true;
+}
+
+export fn VID_Shutdown() void {
+    if (re.Shutdown) |reShutdown| {
+        reShutdown();
+    }
+}
+
+export fn VID_CheckChanges() void {
+}
+
+export fn VID_MenuInit() void {
+}
+
+export fn VID_MenuDraw() void {
+}
+
+export fn VID_MenuKey(k: i32) ?*[]const u8 {
+    return null;
 }
 
 export fn VID_Init() void {
@@ -66,6 +85,7 @@ export fn VID_Init() void {
         .Cvar_Set           = c.Cvar_Set,
         .Cvar_SetValue      = c.Cvar_SetValue,
         .Vid_GetModeInfo    = VID_GetModeInfo,
+        .Vid_MenuInit       = VID_MenuInit,
     };
 
     viddef.width = 320;
@@ -73,29 +93,16 @@ export fn VID_Init() void {
 
     re = GetRefAPI(ri);
 
-    if (re.api_version != c.API_VERSION)
-        c.Com_Error(c.ERR_FATAL, "Re has incompatible api_version");
-    
-        // call the init function
-    if (re.Init (null, null) == -1)
-        c.Com_Error (c.ERR_FATAL, "Couldn't start refresh");
-}
-
-export fn VID_Shutdown() void {
-    if (re.Shutdown) |shutdown| {
-        shutdown();
+    if (re.api_version != c.API_VERSION) {
+        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version"));
     }
-}
 
-export fn VID_CheckChanges() void {
-}
-
-export fn VID_MenuInit() void {
-}
-
-export fn VID_MenuDraw() void {
-}
-
-export fn VID_MenuKey(k: i32) ?*[]const u8 {
-    return null;
+        // call the init function
+    if (re.Init) |reInit| {
+        if (reInit (null, null) == false) {
+            c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh"));
+        }
+    } else {
+        c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Re has no init function"));
+    }
 }
