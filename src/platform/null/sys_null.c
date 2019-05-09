@@ -1,6 +1,6 @@
 // sys_null.h -- null system driver to aid porting efforts
 
-#include "../qcommon/qcommon.h"
+#include "../../qcommon/qcommon.h"
 #include "errno.h"
 
 int	curtime;
@@ -114,7 +114,7 @@ void	Sys_Init (void)
 
 //=============================================================================
 
-void main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	Qcommon_Init (argc, argv);
 

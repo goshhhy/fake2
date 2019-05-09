@@ -1,4 +1,4 @@
-#include "../client/client.h"
+#include "../../client/client.h"
 
 void CDAudio_Play(int track, qboolean looping)
 {
