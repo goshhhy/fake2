@@ -7,11 +7,19 @@ const std = @import("std");
 export var viddef: c.viddef_t = undefined;
 export var re: c.refexport_t = undefined;
 
-extern fn GetRefAPI (rimp: c.refimport_t) c.refexport_t;
-
 var ref_active = false;
 
-fn loadRef(name: []const u8, ri: c.refimport_t) c.refexport_t {
+const LoadRefError = error {
+    LibOpenFailed,
+    LibLookupFailed,
+};
+
+
+fn loadRef(name: []const u8, ri: c.refimport_t) !c.refexport_t {
+    errdefer {
+        ref_active = false;
+    }
+
     if ( ref_active ) {
         if (re.Shutdown) |reShutdown| {
             std.debug.warn("shutting down refresh library");
@@ -21,10 +29,18 @@ fn loadRef(name: []const u8, ri: c.refimport_t) c.refexport_t {
     }
     std.debug.warn("-------- loading {} --------\n", name );
     
-    var lib = std.DynLib.open(std.debug.global_allocator, name) orelse return undefined;
+    var lib = std.DynLib.open(std.debug.global_allocator, name) catch |err| return err;
     
-        GetRefAPI = lib.lookup("GetRefAPI") orelse return undefined;
-        return GetRefAPI(ri);
+    const getRefApi_addr = lib.lookup("GetRefAPI") orelse return LoadRefError.LibLookupFailed;
+    const getRefApi = @intToPtr(extern fn (c.refimport_t) c.refexport_t, getRefApi_addr);
+
+    std.debug.warn("load ok\n");
+
+    const r = getRefApi(ri);
+
+    std.debug.warn("call ok\n");
+
+    return r;
  
 }
 
@@ -111,18 +127,22 @@ export fn VID_Init() void {
     viddef.width = 320;
     viddef.height = 240;
 
-    re = loadRef("libref_soft.so", ri);
+    re = loadRef("libref_sdl.so", ri) catch |err| {
+        std.debug.warn("failure: {}", err);
+        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't load refresh\x00"));
+        return; 
+    };
 
     if (re.api_version != c.API_VERSION) {
-        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version"));
+        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version\x00"));
     }
 
     // call the init function
     if (re.Init) |reInit| {
         if (reInit (null, null) == false) {
-            c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh"));
+            c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh\x00"));
         }
     } else {
-        c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Re has no init function"));
+        c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Re has no init function\x00"));
     }
 }

@@ -37,7 +37,7 @@ void	R_ImageList_f (void)
 	image_t	*image;
 	int		texels;
 
-	ri.Con_Printf (PRINT_ALL, "------------------\n");
+	ri.Con_Printf ( "------------------\n");
 	texels = 0;
 
 	for (i=0, image=r_images ; i<numr_images ; i++, image++)
@@ -48,26 +48,26 @@ void	R_ImageList_f (void)
 		switch (image->type)
 		{
 		case it_skin:
-			ri.Con_Printf (PRINT_ALL, "M");
+			ri.Con_Printf ( "M");
 			break;
 		case it_sprite:
-			ri.Con_Printf (PRINT_ALL, "S");
+			ri.Con_Printf ( "S");
 			break;
 		case it_wall:
-			ri.Con_Printf (PRINT_ALL, "W");
+			ri.Con_Printf ( "W");
 			break;
 		case it_pic:
-			ri.Con_Printf (PRINT_ALL, "P");
+			ri.Con_Printf ( "P");
 			break;
 		default:
-			ri.Con_Printf (PRINT_ALL, " ");
+			ri.Con_Printf ( " ");
 			break;
 		}
 
-		ri.Con_Printf (PRINT_ALL,  " %3i %3i : %s\n",
+		ri.Con_Printf (  " %3i %3i : %s\n",
 			image->width, image->height, image->name);
 	}
-	ri.Con_Printf (PRINT_ALL, "Total texel count: %i\n", texels);
+	ri.Con_Printf ( "Total texel count: %i\n", texels);
 }
 
 
@@ -101,7 +101,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 	len = ri.FS_LoadFile (filename, (void **)&raw);
 	if (!raw)
 	{
-		ri.Con_Printf (PRINT_DEVELOPER, "Bad pcx file %s\n", filename);
+		ri.Con_Printf ("Bad pcx file %s\n", filename);
 		return;
 	}
 
@@ -128,7 +128,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 		|| pcx->xmax >= 640
 		|| pcx->ymax >= 480)
 	{
-		ri.Con_Printf (PRINT_ALL, "Bad pcx file %s\n", filename);
+		ri.Con_Printf ( "Bad pcx file %s\n", filename);
 		return;
 	}
 
@@ -171,7 +171,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 
 	if ( raw - (byte *)pcx > len)
 	{
-		ri.Con_Printf (PRINT_DEVELOPER, "PCX file %s was malformed", filename);
+		ri.Con_Printf ("PCX file %s was malformed", filename);
 		free (*pic);
 		*pic = NULL;
 	}
@@ -220,7 +220,7 @@ void LoadTGA (char *name, byte **pic, int *width, int *height)
 	length = ri.FS_LoadFile (name, (void **)&buffer);
 	if (!buffer)
 	{
-		ri.Con_Printf (PRINT_DEVELOPER, "Bad tga file %s\n", name);
+		ri.Con_Printf ("Bad tga file %s\n", name);
 		return;
 	}
 
@@ -455,7 +455,7 @@ image_t *R_LoadWal (char *name)
 	ri.FS_LoadFile (name, (void **)&mt);
 	if (!mt)
 	{
-		ri.Con_Printf (PRINT_ALL, "R_LoadWal: can't load %s\n", name);
+		ri.Con_Printf ( "R_LoadWal: can't load %s\n", name);
 		return r_notexture_mip;
 	}
 

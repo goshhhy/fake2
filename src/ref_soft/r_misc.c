@@ -137,7 +137,7 @@ void R_PrintTimes (void)
 
 	ms = r_time2 - r_time1;
 	
-	ri.Con_Printf (PRINT_ALL,"%5i ms %3i/%3i/%3i poly %3i surf\n",
+	ri.Con_Printf ("%5i ms %3i/%3i/%3i poly %3i surf\n",
 				ms, c_faceclip, r_polycount, r_drawnpolycount, c_surf);
 	c_surf = 0;
 }
@@ -162,7 +162,7 @@ void R_PrintDSpeeds (void)
 	de_time = (de_time2 - de_time1);
 	ms = (r_time2 - r_time1);
 
-	ri.Con_Printf (PRINT_ALL,"%3i %2ip %2iw %2ib %2is %2ie %2ia\n",
+	ri.Con_Printf ("%3i %2ip %2iw %2ib %2is %2ie %2ia\n",
 				ms, dp_time, rw_time, db_time, se_time, de_time, da_time);
 }
 
@@ -174,7 +174,7 @@ R_PrintAliasStats
 */
 void R_PrintAliasStats (void)
 {
-	ri.Con_Printf (PRINT_ALL,"%3i polygon model drawn\n", r_amodels_drawn);
+	ri.Con_Printf ("%3i polygon model drawn\n", r_amodels_drawn);
 }
 
 
@@ -600,7 +600,7 @@ void WritePCXfile (char *filename, byte *data, int width, int height,
 	length = pack - (byte *)pcx;
 	f = fopen (filename, "wb");
 	if (!f)
-		ri.Con_Printf (PRINT_ALL, "Failed to open to %s\n", filename);
+		ri.Con_Printf ( "Failed to open to %s\n", filename);
 	else
 	{
 		fwrite ((void *)pcx, 1, length, f);
@@ -646,7 +646,7 @@ void R_ScreenShot_f (void)
 	} 
 	if (i==100) 
 	{
-		ri.Con_Printf (PRINT_ALL, "R_ScreenShot_f: Couldn't create a PCX"); 
+		ri.Con_Printf ( "R_ScreenShot_f: Couldn't create a PCX"); 
 		return;
 	}
 
@@ -665,6 +665,6 @@ void R_ScreenShot_f (void)
 	WritePCXfile (checkname, vid.buffer, vid.width, vid.height, vid.rowbytes,
 				  palette);
 
-	ri.Con_Printf (PRINT_ALL, "Wrote %s\n", checkname);
+	ri.Con_Printf ( "Wrote %s\n", checkname);
 } 
 

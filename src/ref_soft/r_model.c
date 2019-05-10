@@ -59,15 +59,15 @@ void Mod_Modellist_f (void)
 	int		total;
 
 	total = 0;
-	ri.Con_Printf (PRINT_ALL,"Loaded models:\n");
+	ri.Con_Printf ("Loaded models:\n");
 	for (i=0, mod=mod_known ; i < mod_numknown ; i++, mod++)
 	{
 		if (!mod->name[0])
 			continue;
-		ri.Con_Printf (PRINT_ALL, "%8i : %s\n",mod->extradatasize, mod->name);
+		ri.Con_Printf ( "%8i : %s\n",mod->extradatasize, mod->name);
 		total += mod->extradatasize;
 	}
-	ri.Con_Printf (PRINT_ALL, "Total resident: %i\n", total);
+	ri.Con_Printf ( "Total resident: %i\n", total);
 }
 
 /*

@@ -332,7 +332,7 @@ qboolean R_Init( void *hInstance, void *wndProc )
 	// create the window
 	R_BeginFrame( 0 );
 
-	ri.Con_Printf (PRINT_ALL, "ref_soft version: "REF_VERSION"\n");
+	ri.Con_Printf ("ref_soft version: "REF_VERSION"\n");
 
 	return true;
 }
@@ -1053,10 +1053,10 @@ void R_RenderFrame (refdef_t *fd)
 		R_PrintDSpeeds ();
 
 	if (sw_reportsurfout->value && r_outofsurfaces)
-		ri.Con_Printf (PRINT_ALL,"Short %d surfaces\n", r_outofsurfaces);
+		ri.Con_Printf ("Short %d surfaces\n", r_outofsurfaces);
 
 	if (sw_reportedgeout->value && r_outofedges)
-		ri.Con_Printf (PRINT_ALL,"Short roughly %d edges\n", r_outofedges * 2 / 3);
+		ri.Con_Printf ("Short roughly %d edges\n", r_outofedges * 2 / 3);
 }
 
 /*
@@ -1128,14 +1128,14 @@ void R_BeginFrame( float camera_separation )
 			if ( err == rserr_invalid_mode )
 			{
 				ri.Cvar_SetValue( "sw_mode", sw_state.prev_mode );
-				ri.Con_Printf( PRINT_ALL, "ref_soft::R_BeginFrame() - could not set mode\n" );
+				ri.Con_Printf(  "ref_soft::R_BeginFrame() - could not set mode\n" );
 			}
 			else if ( err == rserr_invalid_fullscreen )
 			{
 				R_InitGraphics( vid.width, vid.height );
 
 				ri.Cvar_SetValue( "vid_fullscreen", 0);
-				ri.Con_Printf( PRINT_ALL, "ref_soft::R_BeginFrame() - fullscreen unavailable in this mode\n" );
+				ri.Con_Printf(  "ref_soft::R_BeginFrame() - fullscreen unavailable in this mode\n" );
 				sw_state.prev_mode = sw_mode->value;
 //				vid_fullscreen->modified = false;
 //				sw_mode->modified = false;
@@ -1416,7 +1416,7 @@ void Com_Printf (char *fmt, ...)
 	vsprintf (text, fmt, argptr);
 	va_end (argptr);
 
-	ri.Con_Printf (PRINT_ALL, "%s", text);
+	ri.Con_Printf ("%s", text);
 }
 
 #endif

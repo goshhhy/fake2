@@ -50,7 +50,7 @@ void R_DrawSprite (void)
 	if (currententity->frame >= s_psprite->numframes
 		|| currententity->frame < 0)
 	{
-		ri.Con_Printf (PRINT_ALL, "No such sprite frame %i\n", 
+		ri.Con_Printf ( "No such sprite frame %i\n", 
 			currententity->frame);
 		currententity->frame = 0;
 	}
