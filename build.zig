@@ -66,8 +66,9 @@ pub fn build(b: *Builder) void {
         "src/qcommon/pmove.c",
     };
     const client_zig_sources = []ZigSource {
-        ZigSource { .name = "in_null", .path = "src/platform/zignull/in_null.zig" },
-        ZigSource { .name = "vid_null", .path = "src/platform/zignull/vid_null.zig" },    };
+        ZigSource { .name = "in", .path = "src/platform/zignull/in_null.zig" },
+        ZigSource { .name = "vid", .path = "src/platform/ziglin/vid_linux.zig" },
+    };
     const gamelib_c_sources = [][]const u8 {
         "src/game/g_ai.c",
         "src/game/p_client.c",
@@ -153,7 +154,7 @@ pub fn build(b: *Builder) void {
         ref_sdl.addCSourceFile(source, [][]const u8{"-std=c99"});
     }
 
-    // add zig sources for ref_sdl
+    // add zig sources for client
     for (client_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
@@ -166,7 +167,6 @@ pub fn build(b: *Builder) void {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
         obj.addIncludeDir("./src/");
-        client.addObject(obj);
         ref_sdl.addObject(obj);
     }
 

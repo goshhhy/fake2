@@ -2,7 +2,10 @@
 
 const c = @cImport(@cInclude("client/client.h"));
 
+export var in_joystick: [*c]c.cvar_t = undefined;
+
 export fn IN_Init(hInstance: usize, wndProc: usize) i32 {
+    in_joystick = c.Cvar_Get(c"in_joystick", c"0", c.CVAR_ARCHIVE);
     return 1;
 }
 

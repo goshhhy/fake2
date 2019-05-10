@@ -9,6 +9,25 @@ export var re: c.refexport_t = undefined;
 
 extern fn GetRefAPI (rimp: c.refimport_t) c.refexport_t;
 
+var ref_active = false;
+
+fn loadRef(name: []const u8, ri: c.refimport_t) c.refexport_t {
+    if ( ref_active ) {
+        if (re.Shutdown) |reShutdown| {
+            std.debug.warn("shutting down refresh library");
+            reShutdown();   
+        }
+        ref_active = false;
+    }
+    std.debug.warn("-------- loading {} --------\n", name );
+    
+    var lib = std.DynLib.open(std.debug.global_allocator, name) orelse return undefined;
+    
+        GetRefAPI = lib.lookup("GetRefAPI") orelse return undefined;
+        return GetRefAPI(ri);
+ 
+}
+
 export fn VID_NewWindow (width: c_int, height: c_int) void {
         viddef.width = width;
         viddef.height = height;
@@ -92,13 +111,13 @@ export fn VID_Init() void {
     viddef.width = 320;
     viddef.height = 240;
 
-    re = GetRefAPI(ri);
+    re = loadRef("libref_soft.so", ri);
 
     if (re.api_version != c.API_VERSION) {
         c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version"));
     }
 
-        // call the init function
+    // call the init function
     if (re.Init) |reInit| {
         if (reInit (null, null) == false) {
             c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh"));
