@@ -1,4 +1,5 @@
-#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 700
+#define _GNU_SOURCE
 
 #include <sys/types.h>
 #include <errno.h>
@@ -26,10 +27,11 @@ void *Hunk_Begin (int maxsize)
 	maxhunksize = maxsize + sizeof(int);
 	curhunksize = 0;
 	membase = mmap(0, maxhunksize, PROT_READ|PROT_WRITE, 
-		MAP_PRIVATE, -1, 0);
-	if (membase == NULL || membase == (byte *)-1)
+		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	if (membase == NULL || membase == (byte *)-1) {
+		perror( "mmap failed because ");
 		Sys_Error("unable to virtual allocate %d bytes", maxsize);
-
+	}
 	*((int *)membase) = curhunksize;
 
 	return membase + sizeof(int);

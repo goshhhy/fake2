@@ -1,4 +1,5 @@
 const Builder = @import("std").build.Builder;
+const builtin = @import("builtin");
 
 const ZigSource = struct {
     name: []const u8,
@@ -6,22 +7,23 @@ const ZigSource = struct {
 };
 
 pub fn build(b: *Builder) void {
-    const mode = b.standardReleaseOptions();
+    //const mode = b.standardReleaseOptions();
+    const mode = builtin.Mode.Debug;
 
     const client = b.addExecutable("q2-client", null);
-    const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
-    const ref_sdl = b.addSharedLibrary("ref_sdl", null, b.version(3, 19, 0));
+    //const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
+    //const ref_sdl = b.addSharedLibrary("ref_sdl", null, b.version(3, 19, 0));
 
     client.setOutputDir("./");
-    game.setOutputDir("./");
-    ref_sdl.setOutputDir("./");
+    //game.setOutputDir("./");
+    //ref_sdl.setOutputDir("./");
 
     client.setBuildMode(mode);
-    game.setBuildMode(mode);
+    //game.setBuildMode(mode);
 
     //const run_cmd = exe.run();
 
-    const client_c_sources = [][]const u8 {
+    const client_c_sources = [_][]const u8 {
         "src/client/cl_cin.c",
         "src/client/cl_ents.c",
         "src/client/cl_fx.c",
@@ -60,19 +62,22 @@ pub fn build(b: *Builder) void {
         "src/server/sv_world.c",
         "src/platform/null/cd_null.c",
         "src/platform/null/snddma_null.c",
-        "src/platform/null/sys_null.c",
+        "src/platform/linux/sys_linux.c",
+        "src/platform/linux/q_shlinux.c",
+        "src/platform/linux/glob.c",
         "src/platform/linux/net_udp.c",
         "src/game/q_shared.c",
         "src/qcommon/pmove.c",
     };
-    const client_zig_sources = []ZigSource {
+    const client_zig_sources = [_]ZigSource {
         ZigSource { .name = "in", .path = "src/platform/zignull/in_null.zig" },
-        ZigSource { .name = "vid", .path = "src/platform/zignull/vid_null.zig" },
+        //ZigSource { .name = "vid", .path = "src/platform/zignull/vid_null.zig" },
     };
-    const gamelib_c_sources = [][]const u8 {
+    const gamelib_c_sources = [_][]const u8 {
         "src/game/g_ai.c",
         "src/game/p_client.c",
         "src/game/g_cmds.c",
+        "src/game/g_chase.c",
         "src/game/g_svcmds.c",
         "src/game/g_combat.c",
         "src/game/g_func.c",
@@ -115,10 +120,10 @@ pub fn build(b: *Builder) void {
         "src/game/p_trail.c",
         "src/game/p_view.c",
         "src/game/p_weapon.c",
-        "src/game/q_shared.c",
-        "src/game/m_flash.c",
+        //"src/game/q_shared.c",
+        //"src/game/m_flash.c",
     };
-    const ref_sdl_c_sources = [][]const u8 {
+    const ref_sdl_c_sources = [_][]const u8 {
         "src/ref_soft/r_aclip.c",
         "src/ref_soft/r_alias.c",
         "src/ref_soft/r_bsp.c",
@@ -137,25 +142,27 @@ pub fn build(b: *Builder) void {
         "src/ref_soft/r_sprite.c",
         "src/ref_soft/r_surf.c",
     };
-    const ref_sdl_zig_sources = []ZigSource {
+    const ref_sdl_zig_sources = [_]ZigSource {
         ZigSource { .name = "swimp_null", .path = "src/platform/zignull/swimp_null.zig" },
     };
 
     for (client_c_sources) |source| {
-        client.addCSourceFile(source, [][]const u8{"-std=c99", "-g"});
+        client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
     }
     for (gamelib_c_sources) |source| {
-        game.addCSourceFile(source, [][]const u8{"-std=c99", "-g"});
+        client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED"});
+        //game.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
     }
     for (ref_sdl_c_sources) |source| {
-        client.addCSourceFile(source, [][]const u8{"-std=c99", "-g", "-DREF_HARD_LINKED"});
-        ref_sdl.addCSourceFile(source, [][]const u8{"-std=c99", "-g"});
+        client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DREF_HARD_LINKED"});
+        //ref_sdl.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
     }
 
     // add zig sources for client
     for (client_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
+        obj.linkSystemLibrary("SDL2");
         obj.addIncludeDir("./src/");
         client.addObject(obj);
     }
@@ -164,22 +171,23 @@ pub fn build(b: *Builder) void {
     for (ref_sdl_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
+        obj.linkSystemLibrary("SDL2");
         obj.addIncludeDir("./src/");
         client.addObject(obj);
-        ref_sdl.addObject(obj);
+        //ref_sdl.addObject(obj);
     }
 
     client.linkSystemLibrary("c");
-    game.linkSystemLibrary("c");
-    ref_sdl.linkSystemLibrary("c");
-    ref_sdl.linkSystemLibrary("X11");
-    ref_sdl.linkSystemLibrary("SDL2");
+    //game.linkSystemLibrary("c");
+    //ref_sdl.linkSystemLibrary("c");
+    client.linkSystemLibrary("X11");
+    client.linkSystemLibrary("SDL2");
 
     //const run_step = b.step("run", "Run the app");
     //run_step.dependOn(&run_cmd.step);
 
     b.default_step.dependOn(&client.step);
-    b.default_step.dependOn(&game.step);
-    b.default_step.dependOn(&ref_sdl.step);
+    //b.default_step.dependOn(&game.step);
+    //b.default_step.dependOn(&ref_sdl.step);
     //b.installArtifact(exe);
 }

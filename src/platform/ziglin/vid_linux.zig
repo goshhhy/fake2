@@ -29,7 +29,7 @@ fn loadRef(name: []const u8, ri: c.refimport_t) !c.refexport_t {
     }
     std.debug.warn("-------- loading {} --------\n", name );
     
-    var lib = std.DynLib.open(std.debug.global_allocator, name) catch |err| return err;
+    var lib = std.DynLib.open(name) catch |err| return err;
     
     const getRefApi_addr = lib.lookup("GetRefAPI") orelse return LoadRefError.LibLookupFailed;
     const getRefApi = @intToPtr(extern fn (c.refimport_t) c.refexport_t, getRefApi_addr);
@@ -56,7 +56,7 @@ const VidMode = struct {
     mode: i32,
 };
 
-const vid_modes = []VidMode {
+const vid_modes = [_]VidMode {
     VidMode { .desc = "Mode 0: 320x240 [4:3]",      .width =  320, .height =  240, .mode =  0 },
     VidMode { .desc = "Mode 1: 400x300 [4:3]",      .width =  400, .height =  300, .mode =  1 },
     VidMode { .desc = "Mode 2: 512x384 [4:3]",      .width =  512, .height =  384, .mode =  2 },
@@ -134,7 +134,7 @@ export fn VID_Init() void {
     };
 
     if (re.api_version != c.API_VERSION) {
-        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version\x00"));
+        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Ref has incompatible api_version\x00"));
     }
 
     // call the init function
@@ -143,6 +143,6 @@ export fn VID_Init() void {
             c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh\x00"));
         }
     } else {
-        c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Re has no init function\x00"));
+        c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Ref has no init function\x00"));
     }
 }

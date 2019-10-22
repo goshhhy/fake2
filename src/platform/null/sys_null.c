@@ -12,19 +12,6 @@ void Sys_mkdir (char *path)
 {
 }
 
-void Sys_Error (char *error, ...)
-{
-	va_list		argptr;
-
-	printf ("Sys_Error: ");	
-	va_start (argptr,error);
-	vprintf (error,argptr);
-	va_end (argptr);
-	printf ("\n");
-
-	exit (1);
-}
-
 void Sys_Quit (void)
 {
 	exit (0);

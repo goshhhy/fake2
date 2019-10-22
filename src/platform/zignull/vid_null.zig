@@ -1,4 +1,4 @@
-// vid_null.c -- null video driver to aid porting efforts
+// vid_null -- null video driver to aid porting efforts
 // this assumes that one of the refs is statically linked to the executable
 
 const c = @cImport(@cInclude("client/client.h"));
@@ -21,7 +21,7 @@ const VidMode = struct {
     mode: i32,
 };
 
-const vid_modes = []VidMode {
+const vid_modes = [_]VidMode {
     VidMode { .desc = "Mode 0: 320x240 [4:3]",      .width =  320, .height =  240, .mode =  0 },
     VidMode { .desc = "Mode 1: 400x300 [4:3]",      .width =  400, .height =  300, .mode =  1 },
     VidMode { .desc = "Mode 2: 512x384 [4:3]",      .width =  512, .height =  384, .mode =  2 },
@@ -39,7 +39,7 @@ const vid_modes = []VidMode {
     VidMode { .desc = "Mode 16: 1920x1080 [16:9]",  .width = 1920, .height = 1080, .mode = 16 },
 };
 
-export fn VID_GetModeInfo( width: [*c]c_int, height: [*c]c_int, mode: c_int ) c.qboolean {
+pub export fn VID_GetModeInfo( width: [*c]c_int, height: [*c]c_int, mode: c_int ) c.qboolean {
     if ( mode < 0 or mode >= 16 ) {
         return false;
     }
@@ -70,7 +70,7 @@ export fn VID_MenuKey(k: i32) ?*[]const u8 {
 }
 
 export fn VID_Init() void {
-    var ri = c.refimport_t {
+    var ri_local = c.refimport_t {
         .Cmd_AddCommand     = c.Cmd_AddCommand,
         .Cmd_RemoveCommand  = c.Cmd_RemoveCommand,
         .Cmd_Argc           = c.Cmd_Argc,
@@ -92,7 +92,7 @@ export fn VID_Init() void {
     viddef.width = 320;
     viddef.height = 240;
 
-    re = GetRefAPI(ri);
+    re = GetRefAPI(ri_local);
 
     if (re.api_version != c.API_VERSION) {
         c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version"));
