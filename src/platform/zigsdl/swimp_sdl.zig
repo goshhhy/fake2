@@ -121,6 +121,8 @@ export fn SWimp_SetMode( pwidth: *i32, pheight: *i32, mode: i32, fullscreen: boo
     const bufferSlice = allocator.alloc( u8, bufferLen ) catch unreachable;
     vid.buffer = bufferSlice.ptr;
     vid.rowbytes = pwidth.*;
+    vid.width = pwidth.*;
+    vid.height = pheight.*;
     SWimp_Shutdown();
     if ( SWimp_InitGraphics( false ) == false ) {
         std.debug.warn("couldn't set graphics mode");
