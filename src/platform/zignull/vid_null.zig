@@ -10,8 +10,8 @@ export var re: c.refexport_t = undefined;
 extern fn GetRefAPI (rimp: c.refimport_t) c.refexport_t;
 
 export fn VID_NewWindow (width: c_int, height: c_int) void {
-        viddef.width = width;
-        viddef.height = height;
+        viddef.width = @intCast( c_uint, width );
+        viddef.height = @intCast( c_uint, height );
 }
 
 const VidMode = struct {
@@ -70,40 +70,5 @@ export fn VID_MenuKey(k: i32) ?*[]const u8 {
 }
 
 export fn VID_Init() void {
-    var ri_local = c.refimport_t {
-        .Cmd_AddCommand     = c.Cmd_AddCommand,
-        .Cmd_RemoveCommand  = c.Cmd_RemoveCommand,
-        .Cmd_Argc           = c.Cmd_Argc,
-        .Cmd_Argv           = c.Cmd_Argv,
-        .Cmd_ExecuteText    = c.Cbuf_ExecuteText,
-        .Con_Printf         = c.Com_Printf,
-        .Sys_Error          = c.Com_Error,
-        .FS_LoadFile        = c.FS_LoadFile,
-        .FS_FreeFile        = c.FS_FreeFile,
-        .FS_Gamedir         = c.FS_Gamedir,
-        .Vid_NewWindow      = VID_NewWindow,
-        .Cvar_Get           = c.Cvar_Get,
-        .Cvar_Set           = c.Cvar_Set,
-        .Cvar_SetValue      = c.Cvar_SetValue,
-        .Vid_GetModeInfo    = VID_GetModeInfo,
-        .Vid_MenuInit       = VID_MenuInit,
-    };
-
-    viddef.width = 320;
-    viddef.height = 240;
-
-    re = GetRefAPI(ri_local);
-
-    if (re.api_version != c.API_VERSION) {
-        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version"));
-    }
-
-        // call the init function
-    if (re.Init) |reInit| {
-        if (reInit (null, null) == false) {
-            c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh"));
-        }
-    } else {
-        c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Re has no init function"));
-    }
+    return;
 }

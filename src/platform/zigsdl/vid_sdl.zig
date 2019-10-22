@@ -1,4 +1,4 @@
-// vid_null.c -- null video driver to aid porting efforts
+// vid_null -- null video driver to aid porting efforts
 // this assumes that one of the refs is statically linked to the executable
 
 const c = @cImport(@cInclude("client/client.h"));
@@ -7,46 +7,12 @@ const std = @import("std");
 export var viddef: c.viddef_t = undefined;
 export var re: c.refexport_t = undefined;
 
-var ref_active = false;
-
-const LoadRefError = error {
-    LibOpenFailed,
-    LibLookupFailed,
-};
-
-
-fn loadRef(name: []const u8, ri: c.refimport_t) !c.refexport_t {
-    errdefer {
-        ref_active = false;
-    }
-
-    if ( ref_active ) {
-        if (re.Shutdown) |reShutdown| {
-            std.debug.warn("shutting down refresh library");
-            reShutdown();   
-        }
-        ref_active = false;
-    }
-    std.debug.warn("-------- loading {} --------\n", name );
-    
-    var lib = std.DynLib.open(name) catch |err| return err;
-    
-    const getRefApi_addr = lib.lookup("GetRefAPI") orelse return LoadRefError.LibLookupFailed;
-    const getRefApi = @intToPtr(extern fn (c.refimport_t) c.refexport_t, getRefApi_addr);
-
-    std.debug.warn("load ok\n");
-
-    const r = getRefApi(ri);
-
-    std.debug.warn("call ok\n");
-
-    return r;
- 
-}
+extern fn GetRefAPI (rimp: c.refimport_t) c.refexport_t;
+extern fn VID_Printf (print_level: c_int, fmt: [*c]u8, ...) void;
 
 export fn VID_NewWindow (width: c_int, height: c_int) void {
-        viddef.width = width;
-        viddef.height = height;
+        viddef.width = @intCast( c_uint, width );
+        viddef.height = @intCast( c_uint, height );
 }
 
 const VidMode = struct {
@@ -74,7 +40,7 @@ const vid_modes = [_]VidMode {
     VidMode { .desc = "Mode 16: 1920x1080 [16:9]",  .width = 1920, .height = 1080, .mode = 16 },
 };
 
-export fn VID_GetModeInfo( width: [*c]c_int, height: [*c]c_int, mode: c_int ) c.qboolean {
+pub export fn VID_GetModeInfo( width: [*c]c_int, height: [*c]c_int, mode: c_int ) c.qboolean {
     if ( mode < 0 or mode >= 16 ) {
         return false;
     }
@@ -105,13 +71,13 @@ export fn VID_MenuKey(k: i32) ?*[]const u8 {
 }
 
 export fn VID_Init() void {
-    var ri = c.refimport_t {
+    var ri_local = c.refimport_t {
         .Cmd_AddCommand     = c.Cmd_AddCommand,
         .Cmd_RemoveCommand  = c.Cmd_RemoveCommand,
         .Cmd_Argc           = c.Cmd_Argc,
         .Cmd_Argv           = c.Cmd_Argv,
         .Cmd_ExecuteText    = c.Cbuf_ExecuteText,
-        .Con_Printf         = c.Com_Printf,
+        .Con_Printf         = VID_Printf,
         .Sys_Error          = c.Com_Error,
         .FS_LoadFile        = c.FS_LoadFile,
         .FS_FreeFile        = c.FS_FreeFile,
@@ -127,22 +93,18 @@ export fn VID_Init() void {
     viddef.width = 320;
     viddef.height = 240;
 
-    re = loadRef("libref_sdl.so", ri) catch |err| {
-        std.debug.warn("failure: {}", err);
-        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't load refresh\x00"));
-        return; 
-    };
+    re = GetRefAPI(ri_local);
 
     if (re.api_version != c.API_VERSION) {
-        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Ref has incompatible api_version\x00"));
+        c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version"));
     }
 
-    // call the init function
+        // call the init function
     if (re.Init) |reInit| {
         if (reInit (null, null) == false) {
-            c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh\x00"));
+            c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh"));
         }
     } else {
-        c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Ref has no init function\x00"));
+        c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Re has no init function"));
     }
 }

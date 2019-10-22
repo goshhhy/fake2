@@ -1,3 +1,22 @@
+/*
+Copyright (C) 1997-2001 Id Software, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -22,7 +41,7 @@
 
 #include "../../qcommon/qcommon.h"
 
-#include "../linux/rw_linux.h"
+#include "rw_linux.h"
 
 cvar_t *nostdout;
 
@@ -35,9 +54,21 @@ qboolean stdin_active = true;
 // General routines
 // =======================================================================
 
-int stricmp (char *s1, char *s2)
+#define	MAXPRINTMSG	4096
+void VID_Printf (int print_level, char *fmt, ...)
 {
-	return Q_stricmp (s1, s2);
+	va_list		argptr;
+	char		msg[MAXPRINTMSG];
+	static qboolean	inupdate;
+	
+	va_start (argptr,fmt);
+	vsprintf (msg,fmt,argptr);
+	va_end (argptr);
+
+	if (print_level == PRINT_ALL)
+		Com_Printf ("%s", msg);
+	else
+		Com_DPrintf ("%s", msg);
 }
 
 void Sys_ConsoleOutput (char *string)
@@ -77,7 +108,6 @@ void Sys_Quit (void)
 {
 	CL_Shutdown ();
 	Qcommon_Shutdown ();
-    fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~O_NDELAY);
 	_exit(0);
 }
 
@@ -92,9 +122,6 @@ void Sys_Error (char *error, ...)
 { 
     va_list     argptr;
     char        string[1024];
-
-// change stdin to non blocking
-    fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~O_NDELAY);
 
 	CL_Shutdown ();
 	Qcommon_Shutdown ();
@@ -198,9 +225,7 @@ Sys_GetGameAPI
 Loads the game dll
 =================
 */
-
-extern void* GetGameAPI( void* params );
-
+extern void* GetGameAPI( void* );
 void *Sys_GetGameAPI (void *parms)
 {
 	char	name[MAX_OSPATH];
@@ -217,7 +242,6 @@ void *Sys_GetGameAPI (void *parms)
 	getcwd(curpath, sizeof(curpath));
 
 	Com_Printf("------- Loading %s -------\n", gamename);
-
 
 	return GetGameAPI (parms);
 }
@@ -251,14 +275,6 @@ int main (int argc, char **argv)
 
 	Qcommon_Init(argc, argv);
 
-	fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | O_NDELAY);
-
-	nostdout = Cvar_Get("nostdout", "0", 0);
-	if (!nostdout->value) {
-		fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | O_NDELAY);
-//		printf ("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
-	}
-
     oldtime = Sys_Milliseconds ();
     while (1)
     {
@@ -275,7 +291,53 @@ int main (int argc, char **argv)
 
 void Sys_CopyProtect(void)
 {
-	
+	FILE *mnt;
+	struct mntent *ent;
+	char path[MAX_OSPATH];
+	struct stat st;
+	qboolean found_cd = false;
+
+	static qboolean checked = false;
+
+	if (checked)
+		return;
+
+	if ((mnt = setmntent("/etc/mtab", "r")) == NULL)
+		Com_Error(ERR_FATAL, "Can't read mount table to determine mounted cd location.");
+
+	while ((ent = getmntent(mnt)) != NULL) {
+		if (strcmp(ent->mnt_type, "iso9660") == 0) {
+			// found a cd file system
+			found_cd = true;
+			sprintf(path, "%s/%s", ent->mnt_dir, "install/data/quake2.exe");
+			if (stat(path, &st) == 0) {
+				// found it
+				checked = true;
+				endmntent(mnt);
+				return;
+			}
+			sprintf(path, "%s/%s", ent->mnt_dir, "Install/Data/quake2.exe");
+			if (stat(path, &st) == 0) {
+				// found it
+				checked = true;
+				endmntent(mnt);
+				return;
+			}
+			sprintf(path, "%s/%s", ent->mnt_dir, "quake2.exe");
+			if (stat(path, &st) == 0) {
+				// found it
+				checked = true;
+				endmntent(mnt);
+				return;
+			}
+		}
+	}
+	endmntent(mnt);
+
+	if (found_cd)
+		Com_Error (ERR_FATAL, "Could not find a Quake2 CD in your CD drive.");
+	Com_Error (ERR_FATAL, "Unable to find a mounted iso9660 file system.\n"
+		"You must mount the Quake2 CD in a cdrom drive in order to play.");
 }
 
 #if 0

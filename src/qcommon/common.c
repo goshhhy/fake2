@@ -131,7 +131,10 @@ void Com_Printf (char *fmt, ...)
 		if (!logfile)
 		{
 			Com_sprintf (name, sizeof(name), "%s/qconsole.log", FS_Gamedir ());
-			logfile = fopen (name, "w");
+			if (logfile_active->value > 2)
+				logfile = fopen (name, "a");
+			else
+				logfile = fopen (name, "w");
 		}
 		if (logfile)
 			fprintf (logfile, "%s", msg);
@@ -190,7 +193,7 @@ void Com_Error (int code, char *fmt, ...)
 	{
 		CL_Drop ();
 		recursive = false;
-		//longjmp (abortframe, -1);
+		longjmp (abortframe, -1);
 	}
 	else if (code == ERR_DROP)
 	{
@@ -198,7 +201,7 @@ void Com_Error (int code, char *fmt, ...)
 		SV_Shutdown (va("Server crashed: %s\n", msg), false);
 		CL_Drop ();
 		recursive = false;
-		//longjmp (abortframe, -1);
+		longjmp (abortframe, -1);
 	}
 	else
 	{
@@ -1399,8 +1402,8 @@ void Qcommon_Init (int argc, char **argv)
 {
 	char	*s;
 
-	//if (setjmp (abortframe) )
-	//	Sys_Error ("Error during initialization");
+	if (setjmp (abortframe) )
+		Sys_Error ("Error during initialization");
 
 	z_chain.next = z_chain.prev = &z_chain;
 
@@ -1480,7 +1483,7 @@ void Qcommon_Init (int argc, char **argv)
 		SCR_EndLoadingPlaque ();
 	}
 
-	Com_Printf ("====== Fake2 Initialized ======\n\n");	
+	Com_Printf ("====== Quake2 Initialized ======\n\n");	
 }
 
 /*
@@ -1493,8 +1496,8 @@ void Qcommon_Frame (int msec)
 	char	*s;
 	int		time_before, time_between, time_after;
 
-	//if (setjmp (abortframe) )
-	//	return;			// an ERR_DROP was thrown
+	if (setjmp (abortframe) )
+		return;			// an ERR_DROP was thrown
 
 	if ( log_stats->modified )
 	{

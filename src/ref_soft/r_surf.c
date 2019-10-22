@@ -398,7 +398,7 @@ void R_InitCaches (void)
 	// round up to page size
 	size = (size + 8191) & ~8191;
 
-	ri.Con_Printf ("%ik surface cache\n", size/1024);
+	ri.Con_Printf (PRINT_ALL,"%ik surface cache\n", size/1024);
 
 	sc_size = size;
 	sc_base = (surfcache_t *)malloc(size);
@@ -532,8 +532,8 @@ void D_SCDump (void)
 	for (test = sc_base ; test ; test = test->next)
 	{
 		if (test == sc_rover)
-			ri.Con_Printf ("ROVER:\n");
-		ri.Con_Printf ("%p : %i bytes     %i width\n",test, test->size, test->width);
+			ri.Con_Printf (PRINT_ALL,"ROVER:\n");
+		ri.Con_Printf (PRINT_ALL,"%p : %i bytes     %i width\n",test, test->size, test->width);
 	}
 }
 

@@ -182,8 +182,8 @@ typedef struct
 
 //=============================================================================
 
-extern	netadr_t	net_from;
-extern	sizebuf_t	net_message;
+//extern	netadr_t	net_from;
+//extern	sizebuf_t	net_message;
 
 extern	netadr_t	master_adr[MAX_MASTERS];	// address of the master server
 

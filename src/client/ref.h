@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+#ifndef __REF_H
+#define __REF_H
 
 #include "../qcommon/qcommon.h"
 
@@ -123,7 +125,7 @@ typedef struct
 
 
 
-#define	API_VERSION		100
+#define	API_VERSION		3
 
 //
 // these are the functions exported by the refresh module
@@ -196,7 +198,7 @@ typedef struct
 	char	*(*Cmd_Argv) (int i);
 	void	(*Cmd_ExecuteText) (int exec_when, char *text);
 
-	void	(*Con_Printf) (char *str, ...);
+	void	(*Con_Printf) (int print_level, char *str, ...);
 
 	// files will be memory mapped read only
 	// the returned buffer may be part of a larger pak file,
@@ -222,3 +224,5 @@ typedef struct
 
 // this is the only function actually exported at the linker level
 typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
+
+#endif // __REF_H

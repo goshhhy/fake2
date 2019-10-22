@@ -2,8 +2,7 @@
 // snddma_null.c
 // all other sound mixing is portable
 
-#include "../../client/client.h"
-#include "../../client/snd_loc.h"
+
 
 qboolean SNDDMA_Init(void)
 {

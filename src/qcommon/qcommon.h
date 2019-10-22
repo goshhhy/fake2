@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../game/q_shared.h"
 
 
-#define	VERSION		3.19
+#define	VERSION		3.21
 
 #define	BASEDIRNAME	"baseq2"
 
@@ -596,6 +596,8 @@ typedef struct
 	byte		reliable_buf[MAX_MSGLEN-16];	// unacked reliable message
 } netchan_t;
 
+extern	netadr_t	net_from;
+extern	sizebuf_t	net_message;
 extern	byte		net_message_buffer[MAX_MSGLEN];
 
 

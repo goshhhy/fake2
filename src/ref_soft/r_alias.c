@@ -854,7 +854,7 @@ static qboolean R_AliasSetupSkin (void)
 		skinnum = currententity->skinnum;
 		if ((skinnum >= s_pmdl->num_skins) || (skinnum < 0))
 		{
-			ri.Con_Printf ("R_AliasSetupSkin %s: no such skin # %d\n", 
+			ri.Con_Printf (PRINT_ALL, "R_AliasSetupSkin %s: no such skin # %d\n", 
 				currentmodel->name, skinnum);
 			skinnum = 0;
 		}
@@ -979,13 +979,13 @@ void R_AliasSetupFrames( dmdl_t *pmdl )
 
 	if ( ( thisframe >= pmdl->num_frames ) || ( thisframe < 0 ) )
 	{
-		ri.Con_Printf ("R_AliasSetupFrames %s: no such thisframe %d\n", 
+		ri.Con_Printf (PRINT_ALL, "R_AliasSetupFrames %s: no such thisframe %d\n", 
 			currentmodel->name, thisframe);
 		thisframe = 0;
 	}
 	if ( ( lastframe >= pmdl->num_frames ) || ( lastframe < 0 ) )
 	{
-		ri.Con_Printf ("R_AliasSetupFrames %s: no such lastframe %d\n", 
+		ri.Con_Printf (PRINT_ALL, "R_AliasSetupFrames %s: no such lastframe %d\n", 
 			currentmodel->name, lastframe);
 		lastframe = 0;
 	}
@@ -1089,7 +1089,7 @@ void R_AliasDrawModel (void)
 	// set up the skin and verify it exists
 	if ( !R_AliasSetupSkin () )
 	{
-		ri.Con_Printf( "R_AliasDrawModel %s: NULL skin found\n",
+		ri.Con_Printf( PRINT_ALL, "R_AliasDrawModel %s: NULL skin found\n",
 			currentmodel->name);
 		return;
 	}
@@ -1108,8 +1108,8 @@ void R_AliasDrawModel (void)
 
 		// PMM - added double
 		color = currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM);
-		// PMM - reordered, old code first
-/*
+		// PMM - reordered, new shells after old shells (so they get overriden)
+
 		if ( color == RF_SHELL_RED )
 			r_aliasblendcolor = SHELL_RED_COLOR;
 		else if ( color == RF_SHELL_GREEN )
@@ -1130,8 +1130,7 @@ void R_AliasDrawModel (void)
 		// pmm
 		else
 			r_aliasblendcolor = SHELL_WHITE_COLOR;
-*/
-		if ( color & RF_SHELL_RED )
+/*		if ( color & RF_SHELL_RED )
 		{
 			if ( ( color & RF_SHELL_BLUE) && ( color & RF_SHELL_GREEN) )
 				r_aliasblendcolor = SHELL_WHITE_COLOR;
@@ -1155,7 +1154,7 @@ void R_AliasDrawModel (void)
 			r_aliasblendcolor = SHELL_GREEN_COLOR;
 		else
 			r_aliasblendcolor = SHELL_WHITE_COLOR;
-
+*/
 
 		if ( currententity->alpha > 0.33 )
 			d_pdrawspans = R_PolysetDrawSpansConstant8_66;
