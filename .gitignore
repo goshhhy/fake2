@@ -4,5 +4,5 @@ zig-cache/
 vgcore.*
 *.so
 *.so.*
-q2-client
-q2-server
+fake2-client
+fake2-server

@@ -70,8 +70,8 @@ export fn SWimp_Init(hInstance: usize, wndProc: usize) i32 {
         return 1;
     }
 
-    vid.width = 320;
-    vid.height = 240;
+    vid.width = 800;
+    vid.height = 600;
     if ( SWimp_InitGraphics( false ) == false ) {
         std.debug.warn("warning: couldn't set graphics mode\n");
     }
@@ -99,6 +99,7 @@ export fn SWimp_InitGraphics( fullscreen: bool ) bool {
     wsurface = c.SDL_GetWindowSurface( window );
     rsurface = c.SDL_CreateRGBSurface( 0, vid.width, vid.height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 );
     pixel = c.SDL_CreateRGBSurface( 0, 1, 1, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 );
+    video.VID_NewWindow (vid.width, vid.height);
     return true;
 }
 

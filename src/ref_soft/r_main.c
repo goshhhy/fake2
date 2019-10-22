@@ -273,7 +273,7 @@ void R_Register(void)
 	sw_stipplealpha = ri.Cvar_Get("sw_stipplealpha", "0", CVAR_ARCHIVE);
 	sw_surfcacheoverride = ri.Cvar_Get("sw_surfcacheoverride", "0", 0);
 	sw_waterwarp = ri.Cvar_Get("sw_waterwarp", "1", 0);
-	sw_mode = ri.Cvar_Get("sw_mode", "0", CVAR_ARCHIVE);
+	sw_mode = ri.Cvar_Get("sw_mode", "4", CVAR_ARCHIVE);
 	sw_transmooth = ri.Cvar_Get("sw_transmooth", "0", CVAR_ARCHIVE);
 	//sw_transquality = ri.Cvar_Get("sw_transquality", "1", CVAR_ARCHIVE);
 
@@ -1204,7 +1204,7 @@ void R_BeginFrame(float camera_separation)
 
 			if (sw_mode->value == -1)
 			{
-				sw_state.prev_mode = 0; /* safe default for custom mode */
+				sw_state.prev_mode = 1; /* safe default for custom mode */
 			}
 			else
 			{

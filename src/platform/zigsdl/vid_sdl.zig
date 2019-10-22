@@ -10,7 +10,7 @@ export var re: c.refexport_t = undefined;
 extern fn GetRefAPI (rimp: c.refimport_t) c.refexport_t;
 extern fn VID_Printf (print_level: c_int, fmt: [*c]u8, ...) void;
 
-export fn VID_NewWindow (width: c_int, height: c_int) void {
+pub export fn VID_NewWindow (width: c_int, height: c_int) void {
         viddef.width = @intCast( c_uint, width );
         viddef.height = @intCast( c_uint, height );
 }
@@ -90,8 +90,8 @@ export fn VID_Init() void {
         .Vid_MenuInit       = VID_MenuInit,
     };
 
-    viddef.width = 320;
-    viddef.height = 240;
+    viddef.width = 800;
+    viddef.height = 600;
 
     re = GetRefAPI(ri_local);
 
