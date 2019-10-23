@@ -9,9 +9,13 @@ const ZigSource = struct {
 pub fn build(b: *Builder) void {
     const mode = builtin.Mode.Debug;
 
+    //const target = b.standardTargetOptions(null); 
     const client = b.addExecutable("fake2-client", null);
     const server = b.addExecutable("fake2-server", null);
     //const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
+
+    //client.setTheTarget(target);
+    //server.setTheTarget(target);
 
     client.setOutputDir("./");
     server.setOutputDir("./");
@@ -25,6 +29,7 @@ pub fn build(b: *Builder) void {
 
     const client_c_sources = [_][]const u8 {
         "src/client/cl_cin.c",
+
         "src/client/cl_ents.c",
         "src/client/cl_fx.c",
         "src/client/cl_input.c",
