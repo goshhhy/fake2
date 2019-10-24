@@ -59,15 +59,18 @@ export fn VID_Shutdown() void {
 export fn VID_CheckChanges() void {
 }
 
-export fn VID_MenuInit() void {
-}
+//export fn VID_MenuInit() void {
+//}
 
-export fn VID_MenuDraw() void {
-}
+//export fn VID_MenuDraw() void {
+//}
 
-export fn VID_MenuKey(k: i32) ?*[]const u8 {
-    return null;
-}
+//export fn VID_MenuKey(k: i32) ?*[]const u8 {
+//    return null;
+//}
+extern fn VID_MenuInit() void;
+extern fn VID_MenuDraw() void;
+extern fn VID_MenuKey(k: i32) ?*[]const u8;
 
 export fn VID_Init() void {
     return;

@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 cvar_t	*cl_nodelta;
 
-extern	unsigned	sys_frame_time;
-unsigned	frame_msec;
-unsigned	old_sys_frame_time;
+extern	unsigned long long int	sys_frame_time;
+unsigned	long long int frame_msec;
+unsigned	long long int old_sys_frame_time;
 
 /*
 ===============================================================================

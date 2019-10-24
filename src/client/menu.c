@@ -306,7 +306,7 @@ x,y.  The pic will extend to the left of x,
 and both above and below y.
 =============
 */
-void M_DrawCursor( int x, int y, int f )
+void M_DrawCursor( int x, int y, uint64_t f )
 {
 	char	cursorname[80];
 	static qboolean cached;
@@ -422,7 +422,7 @@ void M_Main_Draw (void)
 	strcat( litname, "_sel" );
 	re.DrawPic( xoffset, ystart + m_main_cursor * 40 + 13, litname );
 
-	M_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, (int)(cls.realtime / 100)%NUM_CURSOR_FRAMES );
+	M_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, (cls.realtime / 100)%NUM_CURSOR_FRAMES );
 
 	re.DrawGetPicSize( &w, &h, "m_main_plaque" );
 	re.DrawPic( xoffset - 30 - w, ystart, "m_main_plaque" );

@@ -1483,7 +1483,7 @@ void Qcommon_Init (int argc, char **argv)
 		SCR_EndLoadingPlaque ();
 	}
 
-	Com_Printf ("====== Quake2 Initialized ======\n\n");	
+	Com_Printf ("====== Fake2 Initialized ======\n\n");	
 }
 
 /*
@@ -1491,7 +1491,7 @@ void Qcommon_Init (int argc, char **argv)
 Qcommon_Frame
 =================
 */
-void Qcommon_Frame (int msec)
+void Qcommon_Frame (uint64_t msec)
 {
 	char	*s;
 	int		time_before, time_between, time_after;

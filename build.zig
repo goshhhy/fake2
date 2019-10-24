@@ -68,10 +68,11 @@ pub fn build(b: *Builder) void {
         "src/server/sv_send.c",
         "src/server/sv_user.c",
         "src/server/sv_world.c",
-        "src/platform/linux/sys_linux.c",
         "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c",
         "src/platform/linux/net_udp.c",
+        "src/platform/linux/vid_menu.c",
+        "src/platform/zigsdl/sys_legacy.c",
         "src/game/q_shared.c",
         "src/qcommon/pmove.c",
     };
@@ -80,6 +81,7 @@ pub fn build(b: *Builder) void {
         ZigSource { .name = "cd", .path = "src/platform/zignull/cd_null.zig" },
         ZigSource { .name = "snd", .path = "src/platform/zignull/snddma_null.zig" },
         ZigSource { .name = "swimp_sdl", .path = "src/platform/zigsdl/swimp_sdl.zig" },
+        ZigSource { .name = "sys", .path = "src/platform/zigsdl/sys_sdl.zig" },
         //ZigSource { .name = "vid", .path = "src/platform/zignull/vid_null.zig" },
     };
     const server_zig_sources = [_]ZigSource {
@@ -205,7 +207,7 @@ pub fn build(b: *Builder) void {
     run_step.dependOn(&run_cmd.step);
 
     b.default_step.dependOn(&client.step);
-    b.default_step.dependOn(&server.step);
+    //b.default_step.dependOn(&server.step);
     //b.default_step.dependOn(&game.step);
     //b.installArtifact(exe);
 }

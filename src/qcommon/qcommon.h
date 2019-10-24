@@ -527,7 +527,7 @@ NET
 #define	MAX_MSGLEN		1400		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
 
-typedef enum {NA_LOOPBACK, NA_BROADCAST, NA_IP, NA_IPX, NA_BROADCAST_IPX} netadrtype_t;
+typedef enum {NA_LOOPBACK, NA_BROADCAST, NA_IP} netadrtype_t;
 
 typedef enum {NS_CLIENT, NS_SERVER} netsrc_t;
 
@@ -536,7 +536,6 @@ typedef struct
 	netadrtype_t	type;
 
 	byte	ip[4];
-	byte	ipx[10];
 
 	unsigned short	port;
 } netadr_t;
@@ -570,8 +569,8 @@ typedef struct
 
 	int			dropped;			// between last packet and previous
 
-	int			last_received;		// for timeouts
-	int			last_sent;			// for retransmits
+	uint64_t			last_received;		// for timeouts
+	uint64_t			last_sent;			// for retransmits
 
 	netadr_t	remote_address;
 	int			qport;				// qport value to write when transmitting
@@ -769,7 +768,7 @@ void *Z_TagMalloc (int size, int tag);
 void Z_FreeTags (int tag);
 
 void Qcommon_Init (int argc, char **argv);
-void Qcommon_Frame (int msec);
+void Qcommon_Frame (uint64_t msec);
 void Qcommon_Shutdown (void);
 
 #define NUMVERTEXNORMALS	162
@@ -801,7 +800,6 @@ void	Sys_SendKeyEvents (void);
 void	Sys_Error (char *error, ...);
 void	Sys_Quit (void);
 char	*Sys_GetClipboardData( void );
-void	Sys_CopyProtect (void);
 
 /*
 ==============================================================
