@@ -163,8 +163,8 @@ typedef struct
 
 	void	(*RenderFrame) (refdef_t *fd);
 
-	void	(*DrawGetPicSize) (int *w, int *h, char *name);	// will return 0 0 if not found
-	void	(*DrawPic) (int x, int y, char *name);
+	void	(*DrawGetPicSize) (uint32_t *w, uint32_t *h, const char *name);	// will return 0 0 if not found
+	void	(*DrawPic) (uint32_t x, uint32_t y, const char *name);
 	void	(*DrawStretchPic) (int x, int y, int w, int h, char *name);
 	void	(*DrawChar) (int x, int y, int c);
 	void	(*DrawTileClear) (int x, int y, int w, int h, char *name);

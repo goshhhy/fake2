@@ -157,7 +157,7 @@ export fn SWimp_EndFrame() void {
         y = y + 1;
     }
 
-    var rect1 = c.SDL_Rect{ .x = 0, .y = 0, .w = vid.width, .h = vid.height };
+    var rect1 = c.SDL_Rect{ .x = 0, .y = 0, .w = @intCast( c_int, vid.width ), .h = @intCast( c_int, vid.height ) };
     if ( c.SDL_BlitScaled( rsurface, 0, wsurface, 0 ) != 0 ) {
         std.debug.warn("warning: blit surface failed\n");
     }
@@ -206,14 +206,14 @@ export fn SWimp_SetPalette( opt_pal: ?*[1024]u8 ) void {
 export fn SWimp_InitGraphics( fullscreen: bool ) bool {
     std.debug.warn( "creating window with size {}x{}\n", vid.width, vid.height);
 
-    window = c.SDL_CreateWindow( c"fake2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, vid.width, vid.height, 0 ) orelse {
+    window = c.SDL_CreateWindow( c"fake2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 0 ) orelse {
         c.SDL_Log(c"Unable to create window: %s", c.SDL_GetError());
         return false;
     };
     wsurface = c.SDL_GetWindowSurface( window );
-    rsurface = c.SDL_CreateRGBSurface( 0, vid.width, vid.height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 );
+    rsurface = c.SDL_CreateRGBSurface( 0,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 );
     pixel = c.SDL_CreateRGBSurface( 0, 1, 1, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 );
-    video.VID_NewWindow (vid.width, vid.height);
+    video.VID_NewWindow ( @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ) );
     return true;
 }
 
@@ -225,7 +225,7 @@ export fn SWimp_Shutdown() void {
     c.SDL_FreeSurface( pixel );
 }
 
-export fn SWimp_SetMode( pwidth: *i32, pheight: *i32, mode: i32, fullscreen: bool ) c.rserr_t {
+export fn SWimp_SetMode( pwidth: *u32, pheight: *u32, mode: i32, fullscreen: bool ) c.rserr_t {
     if ( video.VID_GetModeInfo( @ptrCast( [*c]c_int, pwidth), @ptrCast( [*c]c_int, pheight ), mode ) == false ) {
         std.debug.warn("invalid graphics mode selected");
         return c.rserr_t.rserr_invalid_mode;

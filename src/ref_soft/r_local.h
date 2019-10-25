@@ -67,7 +67,7 @@ typedef struct image_s
 {
 	char    name[MAX_QPATH];        // game path, including extension
 	imagetype_t     type;
-	int             width, height;
+	uint32_t             width, height;
 	qboolean        transparent;    // true if any 255 pixels in image
 	int             registration_sequence;  // 0 = free
 	byte		*pixels[4];				// mip levels
@@ -89,10 +89,10 @@ typedef struct
 	pixel_t                 *buffer;                // invisible buffer
 	pixel_t                 *colormap;              // 256 * VID_GRADES size
 	pixel_t                 *alphamap;              // 256 * 256 translucency map
-	int                             rowbytes;               // may be > width if displayed in a window
+	uint32_t                             rowbytes;               // may be > width if displayed in a window
 									// can be negative for stupid dibs
-	int						width;          
-	int						height;
+	uint32_t						width;          
+	uint32_t						height;
 } viddef_t;
 
 typedef enum
@@ -826,8 +826,8 @@ void    R_RenderFrame (refdef_t *fd);
 
 struct image_s  *Draw_FindPic (char *name);
 
-void    Draw_GetPicSize (int *w, int *h, char *name);
-void    Draw_Pic (int x, int y, char *name);
+void    Draw_GetPicSize (uint32_t *w, uint32_t *h, const char *name);
+void    Draw_Pic (uint32_t x, uint32_t y, const char *name);
 void    Draw_StretchPic (int x, int y, int w, int h, char *name);
 void    Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data);
 void    Draw_Char (int x, int y, int c);

@@ -71,7 +71,6 @@ pub fn build(b: *Builder) void {
         "src/platform/linux/q_shlinux.c",
         "src/platform/linux/glob.c",
         "src/platform/linux/net_udp.c",
-        "src/platform/linux/vid_menu.c",
         "src/platform/zigsdl/sys_legacy.c",
         "src/game/q_shared.c",
         "src/qcommon/pmove.c",
@@ -90,6 +89,9 @@ pub fn build(b: *Builder) void {
         ZigSource { .name = "snd", .path = "src/platform/zignull/snddma_null.zig" },
         ZigSource { .name = "swimp_null", .path = "src/platform/zignull/swimp_null.zig" },
         ZigSource { .name = "vid", .path = "src/platform/zignull/vid_null.zig" },
+    };
+    const shared_zig_sources = [_]ZigSource {
+        ZigSource { .name = "cvar", .path = "src/qcommon/cvar.zig" },
     };
     const gamelib_c_sources = [_][]const u8 {
         "src/game/g_ai.c",
@@ -196,6 +198,15 @@ pub fn build(b: *Builder) void {
         obj.addIncludeDir("./src/");
         server.addObject(obj);
     }
+
+    for (shared_zig_sources) |source| {
+        const obj = b.addObject(source.name, source.path);
+        obj.linkSystemLibrary("c");
+        obj.addIncludeDir("./src/");
+        client.addObject(obj);
+        server.addObject(obj);
+    }
+
 
     client.linkSystemLibrary("c");
     client.linkSystemLibrary("X11");

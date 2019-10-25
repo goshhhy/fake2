@@ -309,7 +309,7 @@ void Draw_Char(int x, int y, int num)
 Draw_GetPicSize
 =============
 */
-void Draw_GetPicSize(int *w, int *h, char *pic)
+void Draw_GetPicSize(uint32_t *w, uint32_t *h, const char *pic)
 {
 	image_t *gl;
 
@@ -419,7 +419,7 @@ void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows, byte *data)
 Draw_Pic
 =============
 */
-void Draw_Pic(int x, int y, char *name)
+void Draw_Pic(uint32_t x, uint32_t y, const char *name)
 {
 	image_t			*pic;
 	byte			*dest, *source;

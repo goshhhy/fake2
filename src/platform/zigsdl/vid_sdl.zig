@@ -63,18 +63,162 @@ export fn VID_Shutdown() void {
 export fn VID_CheckChanges() void {
 }
 
-//export fn VID_MenuInit() void {
-//}
+// ===============================================================
+// video menu code
+// ===============================================================
 
-//export fn VID_MenuDraw() void {
-//}
+extern var vid_ref: ?*c.cvar_t;
+extern var scr_viewsize: ?*c.cvar_t;
+var sw_mode: ?*c.cvar_t = null;
+var sw_stipplealpha: ?*c.cvar_t = null;
 
-//export fn VID_MenuKey(k: i32) ?*[]const u8 {
-//    return null;
-//}
-extern fn VID_MenuInit() void;
-extern fn VID_MenuDraw() void;
-extern fn VID_MenuKey(k: i32) ?*[]const u8;
+var s_menu:                 c.menuframework_s = undefined;
+var s_mode_list:            c.menulist_s = undefined;
+var s_screensize_slider:    c.menuslider_s = undefined;
+var s_stipple_box:          c.menulist_s = undefined;
+var s_apply_action:         c.menuaction_s = undefined;
+var s_defaults_action:      c.menuaction_s = undefined;
+
+extern fn M_ForceMenuOff() void;
+extern fn M_PopMenu() void;
+
+export fn ScreenSizeCallback( s_optional: ?*c_void ) void {
+    if ( s_optional ) |s| {
+        const slider = @ptrCast( *c.menuslider_s, @alignCast( @alignOf( c.menuslider_s ), s ) );
+        c.Cvar_SetValue( c"viewsize", slider.*.curvalue * 10 );
+    }
+}
+
+export fn ResetDefaults( s: ?*c_void ) void {
+    VID_MenuInit();
+}
+
+export fn ApplyChanges( s: ?*c_void ) void {
+    c.Cvar_SetValue( c"sw_stipplealpha", @bitCast( f32, s_stipple_box.curvalue ) );
+    c.Cvar_SetValue( c"sw_mode", @bitCast( f32, s_mode_list.curvalue ) );
+    M_ForceMenuOff();
+}
+
+export fn VID_MenuInit() void {
+    const resolutions = [_]?[*]const u8 {
+        c"[320 240  ]",
+        c"[400 300  ]",
+        c"[512 384  ]",
+        c"[640 480  ]",
+        c"[800 600  ]",
+        c"[960 720  ]",
+        c"[1024 768 ]",
+        c"[1152 864 ]",
+        c"[1280 1024]",
+        c"[1600 1200]",
+        null,
+    };
+    const yesno_names = [_]?[*]const u8 {
+        c"no",
+        c"yes",
+        null,
+    };
+
+    if ( sw_stipplealpha == null ) {
+        sw_stipplealpha = c.Cvar_Get( c"sw_stipplealpha", c"0", c.CVAR_ARCHIVE );
+    }
+
+    if ( sw_mode == null ) {
+        sw_mode = c.Cvar_Get(c"sw_mode", c"4", c.CVAR_ARCHIVE);
+    }
+
+    s_mode_list.curvalue = @bitCast( f32, sw_mode.?.*.value ); 
+    
+    if ( scr_viewsize == null ) {
+        scr_viewsize = c.Cvar_Get (c"viewsize", c"100", c.CVAR_ARCHIVE);
+    }
+
+    s_screensize_slider.curvalue = scr_viewsize.?.*.value / 10;
+
+    s_menu.x = @intCast( c_int, viddef.width / 2 );
+    s_menu.nitems = 0;
+
+    s_mode_list.generic.type = c.MTYPE_SPINCONTROL;
+    s_mode_list.generic.name = c"video mode";
+    s_mode_list.generic.x = 0;
+    s_mode_list.generic.y = 10;
+    s_mode_list.itemnames = &resolutions;
+
+    s_screensize_slider.generic.type    = c.MTYPE_SLIDER;
+    s_screensize_slider.generic.x        = 0;
+    s_screensize_slider.generic.y        = 20;
+    s_screensize_slider.generic.name    = c"screen size";
+    s_screensize_slider.minvalue = 3;
+    s_screensize_slider.maxvalue = 12;
+    s_screensize_slider.generic.callback = ScreenSizeCallback;
+
+    s_defaults_action.generic.type = c.MTYPE_ACTION;
+    s_defaults_action.generic.name = c"reset to default";
+    s_defaults_action.generic.x    = 0;
+    s_defaults_action.generic.y    = 90;
+    s_defaults_action.generic.callback = ResetDefaults;
+
+    s_apply_action.generic.type = c.MTYPE_ACTION;
+    s_apply_action.generic.name = c"apply";
+    s_apply_action.generic.x    = 0;
+    s_apply_action.generic.y    = 100;
+    s_apply_action.generic.callback = ApplyChanges;
+
+    s_stipple_box.generic.type = c.MTYPE_SPINCONTROL;
+    s_stipple_box.generic.x    = 0;
+    s_stipple_box.generic.y    = 60;
+    s_stipple_box.generic.name    = c"stipple alpha";
+    s_stipple_box.curvalue = @bitCast( f32, sw_stipplealpha.?.*.value );
+    s_stipple_box.itemnames = &yesno_names;
+
+    c.Menu_AddItem( &s_menu, &s_mode_list );
+    c.Menu_AddItem( &s_menu, &s_screensize_slider );
+    c.Menu_AddItem( &s_menu, &s_stipple_box );
+    c.Menu_AddItem( &s_menu, &s_defaults_action );
+    c.Menu_AddItem( &s_menu, &s_apply_action );
+
+    c.Menu_Center( &s_menu );
+    s_menu.x -= 8;
+}
+
+export fn VID_MenuDraw() void {
+    var w: u32 = 0;
+    var h: u32 = 0;
+    
+    if ( c.re.DrawGetPicSize ) | DrawGetPicSize | {
+        DrawGetPicSize( &w, &h, c"m_banner_video" );
+    }
+    
+    if ( c.re.DrawPic ) | DrawPic | {
+        DrawPic( (viddef.width / 2) - (w / 2) , @divFloor( viddef.height, 2 ) - 110, c"m_banner_video" );
+    }
+
+    c.Menu_AdjustCursor( &s_menu, 1 );
+    c.Menu_Draw( &s_menu );
+}
+
+export fn VID_MenuKey(key: i32) ?[*]const u8 {
+    const sound = c"misc/menu1.wav";
+
+    if ( key == c.K_ESCAPE ) {
+        M_PopMenu();
+        return null;
+    } else if ( key == c.K_UPARROW ) {
+        s_menu.cursor = s_menu.cursor + 1;
+        c.Menu_AdjustCursor( &s_menu, -1 );
+    } else if ( key == c.K_DOWNARROW ) {
+        s_menu.cursor = s_menu.cursor - 1;
+        c.Menu_AdjustCursor( &s_menu, 1 );
+    } else if ( key == c.K_LEFTARROW ) {
+        c.Menu_SlideItem( &s_menu, -1 );
+    } else if ( key == c.K_RIGHTARROW ) {
+        c.Menu_SlideItem( &s_menu, 1 );
+    } else if ( key == c.K_ENTER ) {
+        _ = c.Menu_SelectItem( &s_menu );
+    }
+    return sound;
+}
+
 
 export fn VID_Init() void {
     var ri_local = c.refimport_t {
@@ -105,7 +249,7 @@ export fn VID_Init() void {
         c.Com_Error(c.ERR_FATAL, @ptrCast([*c]u8, &"Re has incompatible api_version"));
     }
 
-        // call the init function
+    // call the init function
     if (re.Init) |reInit| {
         if (reInit (null, null) == false) {
             c.Com_Error (c.ERR_FATAL, @ptrCast([*c]u8, &"Couldn't start refresh"));
