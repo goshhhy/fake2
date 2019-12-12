@@ -94,8 +94,8 @@ export fn ResetDefaults( s: ?*c_void ) void {
 }
 
 export fn ApplyChanges( s: ?*c_void ) void {
-    c.Cvar_SetValue( c"sw_stipplealpha", @bitCast( f32, s_stipple_box.curvalue ) );
-    c.Cvar_SetValue( c"sw_mode", @bitCast( f32, s_mode_list.curvalue ) );
+    c.Cvar_SetValue( c"sw_stipplealpha", @intToFloat( f32, s_stipple_box.curvalue ) );
+    c.Cvar_SetValue( c"sw_mode", @intToFloat( f32, s_mode_list.curvalue ) );
     M_ForceMenuOff();
 }
 
@@ -126,8 +126,7 @@ export fn VID_MenuInit() void {
     if ( sw_mode == null ) {
         sw_mode = c.Cvar_Get(c"sw_mode", c"4", c.CVAR_ARCHIVE);
     }
-
-    s_mode_list.curvalue = @bitCast( f32, sw_mode.?.*.value ); 
+    s_mode_list.curvalue = @floatToInt( c_int, sw_mode.?.value ); 
     
     if ( scr_viewsize == null ) {
         scr_viewsize = c.Cvar_Get (c"viewsize", c"100", c.CVAR_ARCHIVE);
@@ -168,7 +167,7 @@ export fn VID_MenuInit() void {
     s_stipple_box.generic.x    = 0;
     s_stipple_box.generic.y    = 60;
     s_stipple_box.generic.name    = c"stipple alpha";
-    s_stipple_box.curvalue = @bitCast( f32, sw_stipplealpha.?.*.value );
+    s_stipple_box.curvalue = @bitCast( f32, sw_stipplealpha.?.value );
     s_stipple_box.itemnames = &yesno_names;
 
     c.Menu_AddItem( &s_menu, &s_mode_list );
@@ -204,10 +203,10 @@ export fn VID_MenuKey(key: i32) ?[*]const u8 {
         M_PopMenu();
         return null;
     } else if ( key == c.K_UPARROW ) {
-        s_menu.cursor = s_menu.cursor + 1;
+        s_menu.cursor = s_menu.cursor - 1;
         c.Menu_AdjustCursor( &s_menu, -1 );
     } else if ( key == c.K_DOWNARROW ) {
-        s_menu.cursor = s_menu.cursor - 1;
+        s_menu.cursor = s_menu.cursor + 1;
         c.Menu_AdjustCursor( &s_menu, 1 );
     } else if ( key == c.K_LEFTARROW ) {
         c.Menu_SlideItem( &s_menu, -1 );

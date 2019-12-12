@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -19,23 +19,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // vid.h -- video driver defs
 
-typedef struct vrect_s
-{
-	int				x,y,width,height;
+typedef struct vrect_s {
+    int x, y, width, height;
 } vrect_t;
 
-typedef struct
-{
-	uint32_t		width, height;			// coordinates from main game
+typedef struct {
+    uint32_t width, height;  // coordinates from main game
 } viddef_t;
 
-extern	viddef_t	viddef;				// global video state
+extern viddef_t viddef;  // global video state
 
 // Video module initialisation etc
-void	VID_Init (void);
-void	VID_Shutdown (void);
-void	VID_CheckChanges (void);
+void VID_Init( void );
+void VID_Shutdown( void );
+void VID_CheckChanges( void );
 
-void	VID_MenuInit( void );
-void	VID_MenuDraw( void );
+void VID_MenuInit( void );
+void VID_MenuDraw( void );
 const char *VID_MenuKey( int );

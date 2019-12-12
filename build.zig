@@ -92,6 +92,7 @@ pub fn build(b: *Builder) void {
     };
     const shared_zig_sources = [_]ZigSource {
         ZigSource { .name = "cvar", .path = "src/qcommon/cvar.zig" },
+        ZigSource { .name = "sv_main", .path = "src/server/sv_main.zig" },
     };
     const gamelib_c_sources = [_][]const u8 {
         "src/game/g_ai.c",
