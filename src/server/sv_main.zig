@@ -48,7 +48,7 @@ pub export fn SV_StatusString() [*]const u8 {
 
     _ = c.strcpy( &status, c.Cvar_Serverinfo() );
     _ = c.strcat( &status, c"\n" );
-    const statusLength = c.strlen( &status );
+    var statusLength = c.strlen( &status );
 
     const clientList = c.svs.clients[0..@floatToInt(usize, c.maxclients.*.value)];
     for ( clientList ) | cl | {
@@ -56,15 +56,15 @@ pub export fn SV_StatusString() [*]const u8 {
             c.Com_sprintf( &player, 1024, c"%i %i \"%s\"\n",
                          cl.edict.*.client.*.ps.stats[c.STAT_FRAGS], cl.ping,
                          cl.name );
-            playerLength = strlen( player );
-            if ( statusLength + playerLength >= sizeof( status ) )
+            playerLength = @intCast(u32, c.strlen( &player ) );
+            if ( statusLength + playerLength >= (c.MAX_MSGLEN - 16) )
                 break;  // can't hold any more
-            strcpy( status + statusLength, player );
+            _ = c.strcpy( status[statusLength], &player );
             statusLength += playerLength;
         }
     }
-
-    return status;
+    c.Com_Printf( c"z status: %s\n", &status );
+    return &status;
 }
 
 pub export fn SVC_Status() void {

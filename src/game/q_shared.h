@@ -207,7 +207,7 @@ void COM_DefaultExtension( char *path, char *extension );
 char *COM_Parse( char **data_p );
 // data is an in/out parm, returns a parsed out token
 
-void Com_sprintf( char *dest, int size, char *fmt, ... );
+void Com_sprintf( char *dest, int size, const char *fmt, ... );
 
 void Com_PageInMemory( byte *buffer, int size );
 
@@ -280,7 +280,7 @@ void Sys_FindClose( void );
 
 // this is only here so the functions in q_shared.c and q_shwin.c can link
 void Sys_Error( char *error, ... );
-void Com_Printf( char *msg, ... );
+void Com_Printf( const char *msg, ... );
 
 /*
 ==========================================================

@@ -397,7 +397,7 @@ typedef void ( *xcommand_t )( void );
 
 void Cmd_Init( void );
 
-void Cmd_AddCommand( char *cmd_name, xcommand_t function );
+void Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
 // The cmd_name is referenced later, so it should not be in temp memory
@@ -597,7 +597,7 @@ void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );
 bool Netchan_NeedReliable( netchan_t *chan );
 void Netchan_Transmit( netchan_t *chan, int length, byte *data );
 void Netchan_OutOfBand( int net_socket, netadr_t adr, int length, byte *data );
-void Netchan_OutOfBandPrint( int net_socket, netadr_t adr, char *format, ... );
+void Netchan_OutOfBandPrint( int net_socket, netadr_t adr, const char *format, ... );
 bool Netchan_Process( netchan_t *chan, sizebuf_t *msg );
 
 bool Netchan_CanReliable( netchan_t *chan );
@@ -721,9 +721,9 @@ MISC
 void Com_BeginRedirect( int target, char *buffer, int buffersize,
                         void( *flush ) );
 void Com_EndRedirect( void );
-void Com_Printf( char *fmt, ... );
-void Com_DPrintf( char *fmt, ... );
-void Com_Error( int code, char *fmt, ... );
+void Com_Printf( const char *fmt, ... );
+void Com_DPrintf( const char *fmt, ... );
+void Com_Error( int code, const char *fmt, ... );
 void Com_Quit( void );
 
 int Com_ServerState( void );  // this should have just been a cvar...

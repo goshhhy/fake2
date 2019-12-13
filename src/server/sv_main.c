@@ -63,54 +63,6 @@ CONNECTIONLESS COMMANDS
 */
 
 /*
-===============
-SV_StatusString
-
-Builds the string that is sent as heartbeats and status replies
-===============
-*/
-char *SV_StatusString( void ) {
-    char player[1024];
-    static char status[MAX_MSGLEN - 16];
-    int i;
-    client_t *cl;
-    int statusLength;
-    int playerLength;
-
-    strcpy( status, Cvar_Serverinfo() );
-    strcat( status, "\n" );
-    statusLength = strlen( status );
-
-    for ( i = 0; i < maxclients->value; i++ ) {
-        cl = &svs.clients[i];
-        if ( cl->state == cs_connected || cl->state == cs_spawned ) {
-            Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n",
-                         cl->edict->client->ps.stats[STAT_FRAGS], cl->ping,
-                         cl->name );
-            playerLength = strlen( player );
-            if ( statusLength + playerLength >= sizeof( status ) )
-                break;  // can't hold any more
-            strcpy( status + statusLength, player );
-            statusLength += playerLength;
-        }
-    }
-
-    return status;
-}
-
-/*
-================
-SVC_Status
-
-Responds with all the info that qplug or qspy can see
-================
-*/
-void SVC_Status( void ) {
-    Netchan_OutOfBandPrint( NS_SERVER, net_from, "print\n%s",
-                            SV_StatusString() );
-}
-
-/*
 ================
 SVC_Ack
 
@@ -723,7 +675,7 @@ let it know we are alive, and log information
 */
 #define HEARTBEAT_SECONDS 300
 void Master_Heartbeat( void ) {
-    char *string;
+    char *string, *string2;
     int i;
 
     // pgm post3.19 change, cvar pointer not validated before dereferencing

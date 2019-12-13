@@ -3,46 +3,43 @@
 // for pure dedicated servers
 
 const c = @cImport({
-    @cInclude("../qcommon/qcommon.h");
-    @cInclude("SDL2/SDL.h");
+    @cInclude("qcommon/qcommon.h");
 });
 
-fn Key_Bind_Null_f() void {
+export fn Key_Bind_Null_f() void {
 }
 
-fn CL_Init () void {
+export fn CL_Init () void {
 }
 
-fn CL_Drop () void {
+export fn CL_Drop () void {
 }
 
-fn CL_Shutdown () void {
+export fn CL_Shutdown () void {
 }
 
-fn CL_Frame (int msec) void {
+export fn CL_Frame (msec: c_int) void {
 }
 
-fn Con_Print (char *text) void {
+export fn Con_Print (text: [*]const u8 ) void {
 }
 
-fn Cmd_ForwardToServer () void
+export fn Cmd_ForwardToServer () void
 {
-	char *cmd;
-
-	cmd = Cmd_Argv(0);
-	Com_Printf ("Unknown command \"%s\"\n", cmd);
+    var cmd: [*]u8 = c.Cmd_Argv( 0 );
+    c.Com_Printf( c"Unknown command \"%s\"\n", cmd );
 }
 
-fn SCR_DebugGraph (float value, int color) void {
+export fn SCR_DebugGraph (value: f32, color: c_int) void {
 }
 
-fn SCR_BeginLoadingPlaque () void {
+export fn SCR_BeginLoadingPlaque () void {
 }
 
-fn SCR_EndLoadingPlaque () void {
+export fn SCR_EndLoadingPlaque () void {
 }
 
-fn Key_Init () void {
-	c.Cmd_AddCommand (c"bind", Key_Bind_Null_f);
+export fn Key_Init () void {
+    c.Cmd_AddCommand (c"bind", Key_Bind_Null_f);
 }
 

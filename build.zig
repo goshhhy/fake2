@@ -29,7 +29,6 @@ pub fn build(b: *Builder) void {
 
     const client_c_sources = [_][]const u8 {
         "src/client/cl_cin.c",
-
         "src/client/cl_ents.c",
         "src/client/cl_fx.c",
         "src/client/cl_input.c",
@@ -89,6 +88,9 @@ pub fn build(b: *Builder) void {
         ZigSource { .name = "snd", .path = "src/platform/zignull/snddma_null.zig" },
         ZigSource { .name = "swimp_null", .path = "src/platform/zignull/swimp_null.zig" },
         ZigSource { .name = "vid", .path = "src/platform/zignull/vid_null.zig" },
+        ZigSource { .name = "vidmenu", .path = "src/platform/zignull/vidmenu_null.zig" },
+        ZigSource { .name = "sys", .path = "src/platform/zignull/sys_null.zig" },
+        ZigSource { .name = "client", .path = "src/platform/zignull/cl_null.zig" },
     };
     const shared_zig_sources = [_]ZigSource {
         ZigSource { .name = "cvar", .path = "src/qcommon/cvar.zig" },
@@ -167,16 +169,13 @@ pub fn build(b: *Builder) void {
     for (client_c_sources) |source| {
         client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
     }
-    for (client_c_sources) |source| {
-        server.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
-    }
     for (shared_c_sources) |source| {
         client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
-        server.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
+        server.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DDEDICATED_ONLY"});
     }
     for (gamelib_c_sources) |source| {
         client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED"});
-        server.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED"});
+        server.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED", "-DDEDICATED_ONLY"});
         //game.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
     }
     for (ref_sdl_c_sources) |source| {
@@ -219,7 +218,7 @@ pub fn build(b: *Builder) void {
     run_step.dependOn(&run_cmd.step);
 
     b.default_step.dependOn(&client.step);
-    //b.default_step.dependOn(&server.step);
+    b.default_step.dependOn(&server.step);
     //b.default_step.dependOn(&game.step);
     //b.installArtifact(exe);
 }
