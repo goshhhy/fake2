@@ -54,24 +54,6 @@ void PF_Unicast( edict_t *ent, qboolean reliable ) {
 
 /*
 ===============
-PF_dprintf
-
-Debug print to server console
-===============
-*/
-void PF_dprintf( char *fmt, ... ) {
-    char msg[1024];
-    va_list argptr;
-
-    va_start( argptr, fmt );
-    vsprintf( msg, fmt, argptr );
-    va_end( argptr );
-
-    Com_Printf( "%s", msg );
-}
-
-/*
-===============
 PF_cprintf
 
 Print to a single client
@@ -280,13 +262,13 @@ Called when either the entire server is being killed, or
 it is changing to a different game directory.
 ===============
 */
-void SV_ShutdownGameProgs( void ) {
+/*void SV_ShutdownGameProgs( void ) {
     if ( !ge )
         return;
     ge->Shutdown();
     Sys_UnloadGame();
     ge = NULL;
-}
+}*/
 
 /*
 ===============
@@ -308,7 +290,7 @@ void SV_InitGameProgs( void ) {
     import.multicast = SV_Multicast;
     import.unicast = PF_Unicast;
     import.bprintf = SV_BroadcastPrintf;
-    import.dprintf = PF_dprintf;
+    import.dprintf = Com_Printf;
     import.cprintf = PF_cprintf;
     import.centerprintf = PF_centerprintf;
     import.error = PF_error;

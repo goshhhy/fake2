@@ -3,6 +3,9 @@ const c = @cImport({
     @cInclude("server/server.h");
 });
 
+extern var hostname: *c.cvar_t;
+extern var maxclients: *c.cvar_t;
+
 extern fn Master_Shutdown() void;
 
 pub export fn SV_DropClient( drop: *c.client_t ) void {
@@ -67,6 +70,42 @@ pub export fn SV_StatusString() [*]const u8 {
     return &status;
 }
 
+//
 pub export fn SVC_Status() void {
     c.Netchan_OutOfBandPrint( c.NS_SERVER, c.net_from, c"print\n%s", SV_StatusString() );
+}
+
+// Ping request from client
+pub export fn SVC_Ping() void {
+    c.Netchan_OutOfBandPrint( c.NS_SERVER, c.net_from, c"ack" );
+}
+
+// Ping acknowledgement from client
+pub export fn SVC_Ack() void {
+    c.Com_Printf( c"Ping ack from %s\n", c.NET_AdrToString( c.net_from ) );
+}
+
+//  Respond with short info for broadcast scans
+//  Second parameter should be protocol version
+pub export fn SVC_Info() void {
+    if ( maxclients.*.value == 1 )
+        return;
+    
+    var string: [64]u8 = undefined;
+    var version: c_int = c.atoi( c.Cmd_Argv( 1 ) );
+
+    if ( version != c.PROTOCOL_VERSION ) {
+        c.Com_sprintf( &string, 64, c"%s: wrong version\n", hostname.*.string, @intCast( c_int, 64 ) );
+    } else {
+        var i: u32 = 0;
+        var count: u32 = 0;
+        while ( i < @floatToInt( u32, maxclients.*.value ) ) : ( i += 1 ) {
+            if ( @enumToInt( c.svs.clients[i].state ) >= c.cs_connected ) {
+                count += 1;
+            }
+        }
+        c.Com_sprintf( &string,  64, c"%16s %8s %2i/%2i\n", hostname.*.string, 
+                                                            c.sv.name, count, @floatToInt( c_int, maxclients.*.value ) );
+    }
+    c.Netchan_OutOfBandPrint( c.NS_SERVER, c.net_from, c"info\n%s", string );
 }
