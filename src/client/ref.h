@@ -212,7 +212,7 @@ typedef struct {
     cvar_t *( *Cvar_Set )( char *name, char *value );
     void ( *Cvar_SetValue )( char *name, float value );
 
-    qboolean ( *Vid_GetModeInfo )( int *width, int *height, int mode );
+    qboolean ( *Vid_GetModeInfo )( uint32_t *width, uint32_t *height, size_t mode );
     void ( *Vid_MenuInit )( void );
     void ( *Vid_NewWindow )( int width, int height );
 } refimport_t;

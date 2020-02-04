@@ -43,7 +43,7 @@ const vid_modes = [_]VidMode {
     VidMode { .desc = "Mode 16: 1920x1080 [16:9]",  .width = 1920, .height = 1080, .mode = 16 },
 };
 
-pub export fn VID_GetModeInfo( width: [*c]c_int, height: [*c]c_int, mode: c_int ) c.qboolean {
+pub export fn VID_GetModeInfo( width: *u32, height: *u32, mode: i32 ) c.qboolean {
     if ( mode < 0 or mode >= 16 ) {
         return false;
     }
@@ -85,7 +85,7 @@ extern fn M_PopMenu() void;
 export fn ScreenSizeCallback( s_optional: ?*c_void ) void {
     if ( s_optional ) |s| {
         const slider = @ptrCast( *c.menuslider_s, @alignCast( @alignOf( c.menuslider_s ), s ) );
-        c.Cvar_SetValue( c"viewsize", slider.*.curvalue * 10 );
+        c.Cvar_SetValue( "viewsize", slider.*.curvalue * 10 );
     }
 }
 
@@ -94,42 +94,42 @@ export fn ResetDefaults( s: ?*c_void ) void {
 }
 
 export fn ApplyChanges( s: ?*c_void ) void {
-    c.Cvar_SetValue( c"sw_stipplealpha", @intToFloat( f32, s_stipple_box.curvalue ) );
-    c.Cvar_SetValue( c"sw_mode", @intToFloat( f32, s_mode_list.curvalue ) );
+    c.Cvar_SetValue( "sw_stipplealpha", @intToFloat( f32, s_stipple_box.curvalue ) );
+    c.Cvar_SetValue( "sw_mode", @intToFloat( f32, s_mode_list.curvalue ) );
     M_ForceMenuOff();
 }
 
 export fn VID_MenuInit() void {
     const resolutions = [_]?[*]const u8 {
-        c"[320 240  ]",
-        c"[400 300  ]",
-        c"[512 384  ]",
-        c"[640 480  ]",
-        c"[800 600  ]",
-        c"[960 720  ]",
-        c"[1024 768 ]",
-        c"[1152 864 ]",
-        c"[1280 1024]",
-        c"[1600 1200]",
+        "[320 240  ]",
+        "[400 300  ]",
+        "[512 384  ]",
+        "[640 480  ]",
+        "[800 600  ]",
+        "[960 720  ]",
+        "[1024 768 ]",
+        "[1152 864 ]",
+        "[1280 1024]",
+        "[1600 1200]",
         null,
     };
     const yesno_names = [_]?[*]const u8 {
-        c"no",
-        c"yes",
+        "no",
+        "yes",
         null,
     };
 
     if ( sw_stipplealpha == null ) {
-        sw_stipplealpha = c.Cvar_Get( c"sw_stipplealpha", c"0", c.CVAR_ARCHIVE );
+        sw_stipplealpha = c.Cvar_Get( "sw_stipplealpha", "0", c.CVAR_ARCHIVE );
     }
 
     if ( sw_mode == null ) {
-        sw_mode = c.Cvar_Get(c"sw_mode", c"4", c.CVAR_ARCHIVE);
+        sw_mode = c.Cvar_Get("sw_mode", "4", c.CVAR_ARCHIVE);
     }
     s_mode_list.curvalue = @floatToInt( c_int, sw_mode.?.value ); 
     
     if ( scr_viewsize == null ) {
-        scr_viewsize = c.Cvar_Get (c"viewsize", c"100", c.CVAR_ARCHIVE);
+        scr_viewsize = c.Cvar_Get ("viewsize", "100", c.CVAR_ARCHIVE);
     }
 
     s_screensize_slider.curvalue = scr_viewsize.?.*.value / 10;
@@ -138,7 +138,7 @@ export fn VID_MenuInit() void {
     s_menu.nitems = 0;
 
     s_mode_list.generic.type = c.MTYPE_SPINCONTROL;
-    s_mode_list.generic.name = c"video mode";
+    s_mode_list.generic.name = "video mode";
     s_mode_list.generic.x = 0;
     s_mode_list.generic.y = 10;
     s_mode_list.itemnames = &resolutions;
@@ -146,19 +146,19 @@ export fn VID_MenuInit() void {
     s_screensize_slider.generic.type    = c.MTYPE_SLIDER;
     s_screensize_slider.generic.x        = 0;
     s_screensize_slider.generic.y        = 20;
-    s_screensize_slider.generic.name    = c"screen size";
+    s_screensize_slider.generic.name    = "screen size";
     s_screensize_slider.minvalue = 3;
     s_screensize_slider.maxvalue = 12;
     s_screensize_slider.generic.callback = ScreenSizeCallback;
 
     s_defaults_action.generic.type = c.MTYPE_ACTION;
-    s_defaults_action.generic.name = c"reset to default";
+    s_defaults_action.generic.name = "reset to default";
     s_defaults_action.generic.x    = 0;
     s_defaults_action.generic.y    = 90;
     s_defaults_action.generic.callback = ResetDefaults;
 
     s_apply_action.generic.type = c.MTYPE_ACTION;
-    s_apply_action.generic.name = c"apply";
+    s_apply_action.generic.name = "apply";
     s_apply_action.generic.x    = 0;
     s_apply_action.generic.y    = 100;
     s_apply_action.generic.callback = ApplyChanges;
@@ -166,7 +166,7 @@ export fn VID_MenuInit() void {
     s_stipple_box.generic.type = c.MTYPE_SPINCONTROL;
     s_stipple_box.generic.x    = 0;
     s_stipple_box.generic.y    = 60;
-    s_stipple_box.generic.name    = c"stipple alpha";
+    s_stipple_box.generic.name    = "stipple alpha";
     s_stipple_box.curvalue = @bitCast( f32, sw_stipplealpha.?.value );
     s_stipple_box.itemnames = &yesno_names;
 
@@ -185,11 +185,11 @@ export fn VID_MenuDraw() void {
     var h: u32 = 0;
     
     if ( c.re.DrawGetPicSize ) | DrawGetPicSize | {
-        DrawGetPicSize( &w, &h, c"m_banner_video" );
+        DrawGetPicSize( &w, &h, "m_banner_video" );
     }
     
     if ( c.re.DrawPic ) | DrawPic | {
-        DrawPic( (viddef.width / 2) - (w / 2) , @divFloor( viddef.height, 2 ) - 110, c"m_banner_video" );
+        DrawPic( (viddef.width / 2) - (w / 2) , @divFloor( viddef.height, 2 ) - 110, "m_banner_video" );
     }
 
     c.Menu_AdjustCursor( &s_menu, 1 );
@@ -197,7 +197,7 @@ export fn VID_MenuDraw() void {
 }
 
 export fn VID_MenuKey(key: i32) ?[*]const u8 {
-    const sound = c"misc/menu1.wav";
+    const sound = "misc/menu1.wav";
 
     if ( key == c.K_ESCAPE ) {
         M_PopMenu();

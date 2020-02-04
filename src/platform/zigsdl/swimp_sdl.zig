@@ -127,9 +127,12 @@ pub fn KeyHandler( scancode: c.SDL_Scancode, pressed: bool ) void {
 // SWimp functions
 // ========================
 
+export fn SWimp_AppActivate( active: bool ) void {
+    return;
+}
 
 export fn SWimp_BeginFrame(camera_separation: f32) void {
-
+    return;
 }
 
 export fn SWimp_EndFrame() void {
@@ -180,7 +183,7 @@ export fn SWimp_EndFrame() void {
 export fn SWimp_Init(hInstance: usize, wndProc: usize) i32 {
     std.debug.warn("------- SWimp_Init -------\n" );
     if (c.SDL_Init(c.SDL_INIT_VIDEO) != 0) {
-        c.SDL_Log(c"Unable to initialize SDL: %s", c.SDL_GetError());
+        c.SDL_Log("Unable to initialize SDL: %s", c.SDL_GetError());
         return 1;
     }
 
@@ -204,10 +207,10 @@ export fn SWimp_SetPalette( opt_pal: ?*[1024]u8 ) void {
 }
 
 export fn SWimp_InitGraphics( fullscreen: bool ) bool {
-    std.debug.warn( "creating window with size {}x{}\n", vid.width, vid.height);
+    std.debug.warn("creating window with size {}x{}\n", .{vid.width, vid.height});
 
-    window = c.SDL_CreateWindow( c"fake2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 0 ) orelse {
-        c.SDL_Log(c"Unable to create window: %s", c.SDL_GetError());
+    window = c.SDL_CreateWindow( "fake2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 0 ) orelse {
+        c.SDL_Log("Unable to create window: %s", c.SDL_GetError());
         return false;
     };
     wsurface = c.SDL_GetWindowSurface( window );
@@ -225,9 +228,10 @@ export fn SWimp_Shutdown() void {
     c.SDL_FreeSurface( pixel );
 }
 
+
 export fn SWimp_SetMode( pwidth: *u32, pheight: *u32, mode: i32, fullscreen: bool ) c.rserr_t {
-    if ( video.VID_GetModeInfo( @ptrCast( [*c]c_int, pwidth), @ptrCast( [*c]c_int, pheight ), mode ) == false ) {
-        std.debug.warn("invalid graphics mode selected");
+    if ( video.VID_GetModeInfo( pwidth, pheight, mode ) == false ) {
+        std.debug.warn("invalid graphics mode selected", .{});
         return c.rserr_t.rserr_invalid_mode;
     }
     std.debug.warn("graphics mode selected: {}x{}\n", pwidth.*, pheight.*);
@@ -240,13 +244,9 @@ export fn SWimp_SetMode( pwidth: *u32, pheight: *u32, mode: i32, fullscreen: boo
     vid.height = pheight.*;
     SWimp_Shutdown();
     if ( SWimp_InitGraphics( false ) == false ) {
-        std.debug.warn("couldn't set graphics mode");
+        std.debug.warn("couldn't set graphics mode", .{});
         return c.rserr_t.rserr_invalid_mode;
     }
 
     return c.rserr_t.rserr_ok;
-}
-
-export fn SWimp_AppActivate( active: bool ) void {
-
 }
