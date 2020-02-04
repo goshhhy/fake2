@@ -4,5 +4,6 @@ zig-cache/
 vgcore.*
 *.so
 *.so.*
+*.tgz
 fake2-client
 fake2-server

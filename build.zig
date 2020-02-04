@@ -169,20 +169,21 @@ pub fn build(b: *Builder) void {
     };
 
     for (client_c_sources) |source| {
-        client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
+        client.addCSourceFile(source, &[_][]const u8 {"-std=c99", "-g"});
+        client.addCSourceFile(source, &[_][]const u8 {"-std=c99", "-g"});
     }
     for (shared_c_sources) |source| {
-        client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
-        server.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DDEDICATED_ONLY"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g"});
+        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DDEDICATED_ONLY"});
     }
     for (gamelib_c_sources) |source| {
-        client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED"});
-        server.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED", "-DDEDICATED_ONLY"});
-        //game.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED"});
+        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED", "-DDEDICATED_ONLY"});
+        //game.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g"});
     }
     for (ref_sdl_c_sources) |source| {
-        client.addCSourceFile(source, [_][]const u8{"-std=c99", "-g", "-DREF_HARD_LINKED"});
-        //ref_sdl.addCSourceFile(source, [_][]const u8{"-std=c99", "-g"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DREF_HARD_LINKED"});
+        //ref_sdl.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g"});
     }
 
     // add zig sources for client

@@ -14,7 +14,7 @@
 #include "../../qcommon/qcommon.h"
 
 #define MAXPRINTMSG 4096
-void VID_Printf( int print_level, char *fmt, ... ) {
+/*void VID_Printf( int print_level, char *fmt, ... ) {
     va_list argptr;
     char msg[MAXPRINTMSG];
     static qboolean inupdate;
@@ -24,10 +24,10 @@ void VID_Printf( int print_level, char *fmt, ... ) {
     va_end( argptr );
 
     if ( print_level == PRINT_ALL )
-        Com_Printf( "%s", msg );
+        Com_Printf( "VID: %s", msg );
     else
-        Com_DPrintf( "%s", msg );
-}
+        Com_DPrintf( "VID: %s", msg );
+}*/
 
 void Sys_ConsoleOutput( char *string ) { fputs( string, stdout ); }
 

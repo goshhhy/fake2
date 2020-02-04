@@ -66,6 +66,18 @@ pub export fn Hunk_Free( base_optional: ?[*]u8 ) void {
 pub export var curtime: u64 = 0;
 pub export var sys_frame_time: u64 = 0;
 
+pub export fn VID_Printf( print_level: c_int, fmt: [*]const u8, args: void ) void {
+    var msg: [4096]u8 = undefined;
+
+    _ = c.sprintf( &msg, fmt, args );
+
+    if ( true ) {
+        c.Com_Printf( c"VID: %s", msg );
+    } else {
+        c.Com_DPrintf( c"VID: %s", msg );
+    }
+}
+
 pub export fn Sys_Milliseconds() u64 {
     curtime = @intCast( u64, std.time.milliTimestamp() );
     return curtime;
