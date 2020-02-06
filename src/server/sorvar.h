@@ -10,6 +10,4 @@ typedef struct {
     client_t *clients;
 } server_static_t;
 
-extern server_static_t svs;  // persistant server info
-
-void SV_FinalMessage( char *message, qboolean reconnect );
+extern server_static_t svs;

@@ -54,7 +54,7 @@ pub export fn SV_StatusString() [*]const u8 {
     _ = c.strcat( &status, "\n" );
     var statusLength = c.strlen( &status );
 
-    var clientList = @as([*]c.client_t, c.svs.clients)[0..@floatToInt(usize, c.maxclients.*.value)];
+    var clientList = c.svs.clients[0..@floatToInt(usize, c.maxclients.*.value)];
     for ( clientList ) | cl | {
         if ( (cl.state == @intToEnum( c.client_state_t, c.cs_connected ) ) or ( cl.state == @intToEnum( c.client_state_t, c.cs_spawned ) ) ) {
             c.Com_sprintf( &player, 1024, "%i %i \"%s\"\n",

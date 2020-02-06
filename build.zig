@@ -13,8 +13,8 @@ pub fn build(b: *Builder) void {
     const server = b.addExecutable("fake2-server", null);
     //const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
 
-    client.setOutputDir("./");
-    server.setOutputDir("./");
+    //client.setOutputDir("./");
+    //server.setOutputDir("./");
     //game.setOutputDir("./");
     
     client.setDisableGenH(true);
@@ -92,10 +92,8 @@ pub fn build(b: *Builder) void {
         ZigSource { .name = "client", .path = "src/platform/zignull/cl_null.zig" },
     };
     const shared_zig_sources = [_]ZigSource {
-        ZigSource { .name = "cvar", .path = "src/qcommon/cvar.zig" },
         ZigSource { .name = "sv_main", .path = "src/server/sv_main.zig" },
         ZigSource { .name = "sv_game", .path = "src/server/sv_game.zig" },
-        ZigSource { .name = "sv_init", .path = "src/server/sv_init.zig" },
     };
     const gamelib_c_sources = [_][]const u8 {
         "src/game/g_ai.c",
@@ -199,6 +197,7 @@ pub fn build(b: *Builder) void {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
         obj.addIncludeDir("./src/");
+        obj.setDisableGenH(true);
         server.addObject(obj);
     }
 
@@ -206,10 +205,10 @@ pub fn build(b: *Builder) void {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
         obj.addIncludeDir("./src/");
+        obj.setDisableGenH(true);
         client.addObject(obj);
         server.addObject(obj);
     }
-
 
     client.linkSystemLibrary("c");
     client.linkSystemLibrary("X11");
