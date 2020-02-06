@@ -11,7 +11,7 @@ export var viddef: c.viddef_t = undefined;
 export var re: c.refexport_t = undefined;
 
 extern fn GetRefAPI (rimp: c.refimport_t) c.refexport_t;
-extern fn VID_Printf (print_level: c_int, fmt: [*c]u8, ...) void;
+extern fn VID_Printf (print_level: c_int, fmt: [*c]const u8, ...) void;
 
 pub export fn VID_NewWindow (width: c_int, height: c_int) void {
         viddef.width = @intCast( c_uint, width );
@@ -19,9 +19,9 @@ pub export fn VID_NewWindow (width: c_int, height: c_int) void {
 }
 
 const VidMode = struct {
-    desc: []const u8,
-    width: i32,
-    height: i32,
+    desc: [*:0]const u8,
+    width: u32,
+    height: u32,
     mode: i32,
 };
 
@@ -43,13 +43,13 @@ const vid_modes = [_]VidMode {
     VidMode { .desc = "Mode 16: 1920x1080 [16:9]",  .width = 1920, .height = 1080, .mode = 16 },
 };
 
-pub export fn VID_GetModeInfo( width: *u32, height: *u32, mode: i32 ) c.qboolean {
+pub export fn VID_GetModeInfo( width: ?*u32, height: ?*u32, mode: usize ) c.qboolean {
     if ( mode < 0 or mode >= 16 ) {
         return false;
     }
 
-    width.* = vid_modes[@intCast(usize, mode)].width;
-    height.* = vid_modes[@intCast(usize,mode)].height;
+    width.?.* = vid_modes[@intCast(usize, mode)].width;
+    height.?.* = vid_modes[@intCast(usize,mode)].height;
 
     return true;
 }
@@ -100,7 +100,7 @@ export fn ApplyChanges( s: ?*c_void ) void {
 }
 
 export fn VID_MenuInit() void {
-    const resolutions = [_]?[*]const u8 {
+    var resolutions = [_]?[*:0]u8 {
         "[320 240  ]",
         "[400 300  ]",
         "[512 384  ]",
@@ -111,9 +111,8 @@ export fn VID_MenuInit() void {
         "[1152 864 ]",
         "[1280 1024]",
         "[1600 1200]",
-        null,
     };
-    const yesno_names = [_]?[*]const u8 {
+    var yesno_names = [_]?[*:0]u8 {
         "no",
         "yes",
         null,
@@ -196,7 +195,7 @@ export fn VID_MenuDraw() void {
     c.Menu_Draw( &s_menu );
 }
 
-export fn VID_MenuKey(key: i32) ?[*]const u8 {
+export fn VID_MenuKey(key: i32) ?[*:0]u8 {
     const sound = "misc/menu1.wav";
 
     if ( key == c.K_ESCAPE ) {

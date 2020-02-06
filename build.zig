@@ -9,17 +9,16 @@ const ZigSource = struct {
 pub fn build(b: *Builder) void {
     const mode = builtin.Mode.Debug;
 
-    //const target = b.standardTargetOptions(null); 
     const client = b.addExecutable("fake2-client", null);
     const server = b.addExecutable("fake2-server", null);
     //const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
 
-    //client.setTheTarget(target);
-    //server.setTheTarget(target);
-
     client.setOutputDir("./");
     server.setOutputDir("./");
     //game.setOutputDir("./");
+    
+    client.setDisableGenH(true);
+    server.setDisableGenH(true);
 
     client.setBuildMode(mode);
     server.setBuildMode(mode);
@@ -192,6 +191,7 @@ pub fn build(b: *Builder) void {
         obj.linkSystemLibrary("c");
         obj.linkSystemLibrary("SDL2");
         obj.addIncludeDir("./src/");
+        obj.setDisableGenH(true);
         client.addObject(obj);
     }
 

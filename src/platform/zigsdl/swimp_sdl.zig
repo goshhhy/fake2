@@ -147,12 +147,12 @@ export fn SWimp_EndFrame() void {
             var color = currentPalette[colorIndex];
             var rect = c.SDL_Rect{ .x = 0, .y = 0, .w = 1, .h = 1 };
             if ( c.SDL_FillRect(pixel, &rect, c.SDL_MapRGB(pixel.*.format, color.r, color.g, color.b) ) != 0 ) {
-                 std.debug.warn("fill failed");               
+                 std.debug.warn("fill failed", .{});               
             }
 
             var dest = c.SDL_Rect{ .x = @intCast( c_int, x ), .y = @intCast( c_int, y ), .w = 1, .h = 1 };
             if ( c.SDL_BlitSurface( pixel, &rect, rsurface, &dest ) != 0 ) {
-                std.debug.warn("blit failed");
+                std.debug.warn("blit failed", .{});
             }        
             x = x + 1;
         }
@@ -162,11 +162,11 @@ export fn SWimp_EndFrame() void {
 
     var rect1 = c.SDL_Rect{ .x = 0, .y = 0, .w = @intCast( c_int, vid.width ), .h = @intCast( c_int, vid.height ) };
     if ( c.SDL_BlitScaled( rsurface, 0, wsurface, 0 ) != 0 ) {
-        std.debug.warn("warning: blit surface failed\n");
+        std.debug.warn("warning: blit surface failed\n", .{});
     }
 
     if ( c.SDL_UpdateWindowSurface( window ) != 0 ) {
-        std.debug.warn("warning: update surface failed\n");
+        std.debug.warn("warning: update surface failed\n", .{});
     }
     var e: c.SDL_Event = undefined;
     while ( c.SDL_PollEvent( &e ) != 0 ) {
@@ -181,7 +181,7 @@ export fn SWimp_EndFrame() void {
 }
 
 export fn SWimp_Init(hInstance: usize, wndProc: usize) i32 {
-    std.debug.warn("------- SWimp_Init -------\n" );
+    std.debug.warn("------- SWimp_Init -------\n", .{} );
     if (c.SDL_Init(c.SDL_INIT_VIDEO) != 0) {
         c.SDL_Log("Unable to initialize SDL: %s", c.SDL_GetError());
         return 1;
@@ -190,7 +190,7 @@ export fn SWimp_Init(hInstance: usize, wndProc: usize) i32 {
     vid.width = 800;
     vid.height = 600;
     if ( SWimp_InitGraphics( false ) == false ) {
-        std.debug.warn("warning: couldn't set graphics mode\n");
+        std.debug.warn("warning: couldn't set graphics mode\n", .{});
     }
     return 0;
 }
@@ -229,12 +229,12 @@ export fn SWimp_Shutdown() void {
 }
 
 
-export fn SWimp_SetMode( pwidth: *u32, pheight: *u32, mode: i32, fullscreen: bool ) c.rserr_t {
+export fn SWimp_SetMode( pwidth: *u32, pheight: *u32, mode: usize, fullscreen: bool ) c.rserr_t {
     if ( video.VID_GetModeInfo( pwidth, pheight, mode ) == false ) {
         std.debug.warn("invalid graphics mode selected", .{});
         return c.rserr_t.rserr_invalid_mode;
     }
-    std.debug.warn("graphics mode selected: {}x{}\n", pwidth.*, pheight.*);
+    std.debug.warn("graphics mode selected: {}x{}\n", .{pwidth.*, pheight.*});
 
     const bufferLen : usize = @intCast( usize, (pwidth.*) * (pheight.*) );
     const bufferSlice = allocator.alloc( u8, bufferLen ) catch unreachable;
