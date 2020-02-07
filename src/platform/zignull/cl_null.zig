@@ -27,7 +27,7 @@ export fn Con_Print (text: [*]const u8 ) void {
 export fn Cmd_ForwardToServer () void
 {
     var cmd: [*]u8 = c.Cmd_Argv( 0 );
-    c.Com_Printf( c"Unknown command \"%s\"\n", cmd );
+    c.Com_Printf( "Unknown command \"%s\"\n", cmd );
 }
 
 export fn SCR_DebugGraph (value: f32, color: c_int) void {
@@ -40,6 +40,6 @@ export fn SCR_EndLoadingPlaque () void {
 }
 
 export fn Key_Init () void {
-    c.Cmd_AddCommand (c"bind", Key_Bind_Null_f);
+    c.Cmd_AddCommand ("bind", Key_Bind_Null_f);
 }
 

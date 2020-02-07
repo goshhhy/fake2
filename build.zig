@@ -13,8 +13,8 @@ pub fn build(b: *Builder) void {
     const server = b.addExecutable("fake2-server", null);
     //const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
 
-    //client.setOutputDir("./");
-    //server.setOutputDir("./");
+    client.setOutputDir("./");
+    server.setOutputDir("./");
     //game.setOutputDir("./");
     
     client.setDisableGenH(true);
@@ -166,7 +166,6 @@ pub fn build(b: *Builder) void {
     };
 
     for (client_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8 {"-std=c99", "-g"});
         client.addCSourceFile(source, &[_][]const u8 {"-std=c99", "-g"});
     }
     for (shared_c_sources) |source| {
