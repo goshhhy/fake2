@@ -12,7 +12,7 @@ const std = @import("std");
 var audio: c.SDL_AudioDeviceID = 0;
 
 var bufpos: usize = 0;
-var buffer: [16384]u8 = undefined;
+var buffer: [32768]u8 = undefined;
 
 export fn fillbuff(udata: ?*c_void, stream: [*c]u8, len: i32) void {
     var i: usize = 0;
@@ -20,7 +20,7 @@ export fn fillbuff(udata: ?*c_void, stream: [*c]u8, len: i32) void {
     while ( i < len ) {
         stream[i] = buffer[bufpos];
         bufpos = bufpos + 1;
-        if ( bufpos >= 16384 ) {
+        if ( bufpos >= 32768 ) {
             bufpos = 0;
         }
         i = i + 1;
@@ -38,10 +38,28 @@ pub export fn SNDDMA_Init() bool {
         }
     }
 
-    spec_want.freq = 44100;
-    spec_want.format = c.AUDIO_U8;
+    var khz: i32 = @floatToInt(i32, c.Cvar_Get("s_khz", "44", c.CVAR_ARCHIVE).*.value);
+    var depth: i32 = @floatToInt(i32, c.Cvar_Get("s_depth", "16", c.CVAR_ARCHIVE).*.value);
+
+    spec_want.freq = switch( khz ) {
+        11 => 11025,
+        22 => 22050,
+        44 => 44100,
+        48 => 48000,
+        else => 44100,
+    };
+
+    if ( depth == 8 ) {
+        spec_want.format = c.AUDIO_U8;
+        c.dma.samples = 32768;
+        c.dma.samplebits = 8;
+    } else {
+        spec_want.format = c.AUDIO_S16LSB;
+        c.dma.samples = 16384;
+        c.dma.samplebits = 16;
+    }
     spec_want.channels = 2;
-    spec_want.samples = 1024;
+    spec_want.samples = 512;
     spec_want.callback = fillbuff;
 
     audio = c.SDL_OpenAudioDevice(null, 0, &spec_want, &spec_have, c.SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
@@ -53,10 +71,8 @@ pub export fn SNDDMA_Init() bool {
     c.dma.speed = spec_have.freq;
     c.dma.channels = spec_have.channels;
     c.dma.samplepos = 0;
-    c.dma.samples = 16384;
-    c.dma.samplebits = 8;
     c.dma.buffer = &buffer;
-    c.dma.submission_chunk = 16;
+    c.dma.submission_chunk = 64;
 
     c.SDL_PauseAudioDevice(audio, 0);
 
