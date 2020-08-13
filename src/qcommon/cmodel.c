@@ -131,7 +131,8 @@ void CMod_LoadSubmodels( lump_t *l ) {
     cmodel_t *out;
     int i, j, count;
 
-    in = (void *)( cmod_base + l->fileofs );
+    in = (void *)( cmod_base + (unsigned int)(l->fileofs) );
+
     if ( l->filelen % sizeof( *in ) )
         Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
     count = l->filelen / sizeof( *in );
@@ -381,7 +382,7 @@ void CMod_LoadBrushSides( lump_t *l ) {
     int count;
     int num;
 
-    in = (void *)( cmod_base + l->fileofs );
+    in = (void *)( cmod_base + (unsigned int)(l->fileofs) );
     if ( l->filelen % sizeof( *in ) )
         Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size" );
     count = l->filelen / sizeof( *in );

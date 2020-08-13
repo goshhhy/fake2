@@ -13,7 +13,7 @@ fn KBD_Init() void {
 }
 
 export fn IN_Init(hInstance: usize, wndProc: usize) i32 {
-    in_joystick = c.Cvar_Get(c"in_joystick", c"0", c.CVAR_ARCHIVE);
+    in_joystick = c.Cvar_Get("in_joystick", "0", c.CVAR_ARCHIVE);
     return 1;
 }
 

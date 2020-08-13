@@ -25,22 +25,22 @@ fn H( x: u32, y: u32, z: u32 ) u32 {
 
 fn S( a: *u32, b: u32, c: u32, d: u32, k: u32, s: u32 ) void {
     var f = F( ( b ), ( c ), ( d ) );
-    _ = @addWithOverflow( u32, f, X[( k )], &f );
+    _ = @addWithOverflow( u32, f, X[k], &f );
     _ = @addWithOverflow( u32, a.*, f, a );
     a.* = std.math.rotl(u32, a.*, s);
 }
 
 fn T( a: *u32, b: u32, c: u32, d: u32, k: u32, s: u32 ) void {
-    var g = ( G( ( b ), ( c ), ( d ) ) );
-    _ = @addWithOverflow( u32, g, X[( k )], &g );
+    var g = G( ( b ), ( c ), ( d ) );
+    _ = @addWithOverflow( u32, g, X[k], &g );
     _ = @addWithOverflow( u32, g, 0x5A827999, &g );
     _ = @addWithOverflow( u32, a.*, g, a );
     a.* = std.math.rotl(u32, a.*, s);
 }
 
 fn U( a: *u32, b: u32, c: u32, d: u32, k: u32, s: u32 ) void {
-    var h = ( H( ( b ), ( c ), ( d ) ) );
-    _ = @addWithOverflow( u32, h, X[( k )], &h );
+    var h = H( ( b ), ( c ), ( d ) );
+    _ = @addWithOverflow( u32, h, X[k], &h );
     _ = @addWithOverflow( u32, h, 0x6ED9EBA1, &h );
     _ = @addWithOverflow( u32, a.*, h, a );
     a.* = std.math.rotl(u32, a.*, s);
@@ -124,6 +124,7 @@ fn hash( buffer: [*]const u8, length: u32, _digest: *[4]u32 ) void {
     var i: usize = 0;
     var j: usize = 0;
     while ( i < len ) : ( i += 1 ) {
+        j = 0;
         while ( j < 16 ) : ( j += 1 ) {
             X[j] = ( ( ptr[0] ) | std.math.shl( u32, ptr[1], 8 ) | std.math.shl( u32, ptr[2], 16 ) | std.math.shl( u32, ptr[3], 24 ) );
 
