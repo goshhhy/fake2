@@ -189,7 +189,7 @@ export fn SWimp_Init(hInstance: usize, wndProc: usize) i32 {
     std.debug.warn("------- SWimp_Init -------\n", .{} );
     c.SDL_LogSetOutputFunction(SWimp_SdlLog, null);
     if (c.SDL_Init(c.SDL_INIT_VIDEO) != 0) {
-        c.SDL_Log("Unable to initialize SDL: %s", c.SDL_GetError());
+        c.SDL_Log("Unable to initialize SDL video: %s", c.SDL_GetError());
         @panic("no sdl");
         //return 1;
     }

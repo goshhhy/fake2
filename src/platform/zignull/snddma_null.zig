@@ -6,6 +6,8 @@ const c = @cImport({
     @cInclude("../../client/snd_loc.h");
 });
 
+var audio: c.SDL_AudioDeviceID = null;
+
 pub export fn SNDDMA_Init() bool {
     return false;
 }
