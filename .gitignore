@@ -1,9 +1,13 @@
 baseq2/
+id1/
 zig-cache/
 .vscode/
 vgcore.*
 *.so
 *.so.*
 *.tgz
-fake2-client
-fake2-server
+*-client
+*-server
+*.pak
+*.md2
+*.pcx

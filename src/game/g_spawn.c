@@ -405,17 +405,17 @@ char *ED_ParseEdict( char *data, edict_t *ent ) {
         if ( com_token[0] == '}' )
             break;
         if ( !data )
-            gi.error( "ED_ParseEntity: EOF without closing brace" );
+            gi.err( "ED_ParseEntity: EOF without closing brace" );
 
         strncpy( keyname, com_token, sizeof( keyname ) - 1 );
 
         // parse value
         com_token = COM_Parse( &data );
         if ( !data )
-            gi.error( "ED_ParseEntity: EOF without closing brace" );
+            gi.err( "ED_ParseEntity: EOF without closing brace" );
 
         if ( com_token[0] == '}' )
-            gi.error( "ED_ParseEntity: closing brace without data" );
+            gi.err( "ED_ParseEntity: closing brace without data" );
 
         init = true;
 
@@ -528,7 +528,7 @@ void SpawnEntities( char *mapname, char *entities, char *spawnpoint ) {
         if ( !entities )
             break;
         if ( com_token[0] != '{' )
-            gi.error( "ED_LoadFromFile: found %s when expecting {", com_token );
+            gi.err( "ED_LoadFromFile: found %s when expecting {", com_token );
 
         if ( !ent )
             ent = g_edicts;

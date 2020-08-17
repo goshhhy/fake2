@@ -614,7 +614,7 @@ CL_ParseServerMessage
 */
 void CL_ParseServerMessage( void ) {
     int cmd;
-    char *s;
+    char *s, *p;
     int i;
 
     //
@@ -683,8 +683,24 @@ void CL_ParseServerMessage( void ) {
                     S_StartLocalSound( "misc/talk.wav" );
                     con.ormask = 128;
                 }
-                Com_Printf( "%s", MSG_ReadString( &net_message ) );
+                p = MSG_ReadString( &net_message );
+                Com_Printf( "%s", p );
                 con.ormask = 0;
+
+                if ( ( ( p = strstr(p, ": ") ) == NULL ) ) {
+                    break;
+                }
+                
+                if ( strncmp(p+2, "!version", 8 ) ) {
+                    break;
+                }
+
+                if (cl.reply_time && cls.realtime - cl.reply_time < 120000) {
+                    break;
+                }
+
+                cl.reply_time = cls.realtime;
+                cl.reply_delta = 1024 + (rand() & 1023);
                 break;
 
             case svc_centerprint:

@@ -145,6 +145,9 @@ typedef struct {
     char cinematicpalette[768];
     qboolean cinematicpalette_active;
 
+    uint32_t    reply_time;
+    uint32_t    reply_delta;
+
     //
     // server state information
     //

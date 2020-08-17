@@ -1699,6 +1699,13 @@ void CL_Frame (int msec)
 	if (msec > 5000)
 		cls.netchan.last_received = Sys_Milliseconds ();
 
+    if (cl.reply_delta) {
+		if ( ! ( cls.realtime - cl.reply_time < cl.reply_delta ) ) {
+			Cbuf_AddText( va("say \"%s\"\n", GetPlatformString()) );
+			cl.reply_delta = 0 ;
+		}
+    }
+
 	// fetch results from server
 	CL_ReadPackets ();
 

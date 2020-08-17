@@ -1,4 +1,5 @@
 const Builder = @import("std").build.Builder;
+const Package = @import("std").build.Pkg;
 const builtin = @import("builtin");
 
 const ZigSource = struct {
@@ -7,18 +8,21 @@ const ZigSource = struct {
 };
 
 pub fn build(b: *Builder) void {
-    const mode = builtin.Mode.Debug;
+    const mode = builtin.Mode.ReleaseSafe;
 
-    const client = b.addExecutable("fake2-client", null);
-    const server = b.addExecutable("fake2-server", null);
+    const client = b.addExecutable("ztech2-client", null);
+    const server = b.addExecutable("ztech2-server", null);
+
+    client.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
+    server.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
     //const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
 
     client.setOutputDir("./");
     server.setOutputDir("./");
     //game.setOutputDir("./");
     
-    client.setDisableGenH(true);
-    server.setDisableGenH(true);
+    //client.setDisableGenH(true);
+    //server.setDisableGenH(true);
 
     client.setBuildMode(mode);
     server.setBuildMode(mode);
@@ -49,7 +53,6 @@ pub fn build(b: *Builder) void {
     };
 
     const shared_c_sources = [_][]const u8 {
-        "src/game/m_flash.c",
         "src/qcommon/cmd.c",
         "src/qcommon/cmodel.c",
         "src/qcommon/common.c",
@@ -72,12 +75,13 @@ pub fn build(b: *Builder) void {
         "src/platform/zigsdl/sys_legacy.c",
         "src/game/q_shared.c",
         "src/qcommon/pmove.c",
+        "src/game/m_flash.c",
     };
     const client_zig_sources = [_]ZigSource {
-        ZigSource { .name = "in", .path = "src/platform/zignull/in_null.zig" },
+        ZigSource { .name = "in", .path = "src/platform/zigsdl/in_sdl.zig" },
         ZigSource { .name = "cd", .path = "src/platform/zignull/cd_null.zig" },
-        ZigSource { .name = "snd", .path = "src/platform/zignull/snddma_null.zig" },
-        ZigSource { .name = "swimp_sdl", .path = "src/platform/zigsdl/swimp_sdl.zig" },
+        ZigSource { .name = "snd", .path = "src/platform/zigsdl/snddma_sdl.zig" },
+        ZigSource { .name = "swimp", .path = "src/platform/zigsdl/swimp_sdl.zig" },
         ZigSource { .name = "sys", .path = "src/platform/zigsdl/sys_sdl.zig" },
         //ZigSource { .name = "vid", .path = "src/platform/zignull/vid_null.zig" },
     };
@@ -94,6 +98,7 @@ pub fn build(b: *Builder) void {
     const shared_zig_sources = [_]ZigSource {
         ZigSource { .name = "sv_main", .path = "src/server/sv_main.zig" },
         ZigSource { .name = "sv_game", .path = "src/server/sv_game.zig" },
+        //ZigSource { .name = "md4", .path = "src/qcommon/md4.zig" },
     };
     const gamelib_c_sources = [_][]const u8 {
         "src/game/g_ai.c",
@@ -166,19 +171,19 @@ pub fn build(b: *Builder) void {
     };
 
     for (client_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8 {"-std=c99", "-g"});
+        client.addCSourceFile(source, &[_][]const u8 {"-std=c99", "-g", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
     }
     for (shared_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g"});
-        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DDEDICATED_ONLY"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
+        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DDEDICATED_ONLY", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
     }
     for (gamelib_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED"});
-        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED", "-DDEDICATED_ONLY"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
+        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED", "-DDEDICATED_ONLY", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
         //game.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g"});
     }
     for (ref_sdl_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DREF_HARD_LINKED"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DREF_HARD_LINKED", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
         //ref_sdl.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g"});
     }
 
@@ -186,17 +191,24 @@ pub fn build(b: *Builder) void {
     for (client_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
+        obj.linkSystemLibrary("wayland-client");
         obj.linkSystemLibrary("SDL2");
+
+        obj.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
+
         obj.addIncludeDir("./src/");
-        obj.setDisableGenH(true);
-        client.addObject(obj);
+        //obj.setDisableGenH(true);
+         client.addObject(obj);
     }
 
     for (server_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
         obj.addIncludeDir("./src/");
-        obj.setDisableGenH(true);
+
+        obj.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
+
+        //obj.setDisableGenH(true);
         server.addObject(obj);
     }
 
@@ -204,13 +216,17 @@ pub fn build(b: *Builder) void {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
         obj.addIncludeDir("./src/");
-        obj.setDisableGenH(true);
+        //obj.setDisableGenH(true);
+
+        obj.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
+
         client.addObject(obj);
         server.addObject(obj);
     }
 
     client.linkSystemLibrary("c");
-    client.linkSystemLibrary("X11");
+    client.linkSystemLibrary("x11");
+    client.linkSystemLibrary("wayland-client");
     client.linkSystemLibrary("SDL2");
 
     server.linkSystemLibrary("c");

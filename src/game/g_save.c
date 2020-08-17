@@ -287,7 +287,7 @@ void WriteField1( FILE *f, field_t *field, byte *base ) {
             break;
 
         default:
-            gi.error( "WriteEdict: unknown field type" );
+            gi.err( "WriteEdict: unknown field type" );
     }
 }
 
@@ -376,7 +376,7 @@ void ReadField( FILE *f, field_t *field, byte *base ) {
             break;
 
         default:
-            gi.error( "ReadEdict: unknown field type" );
+            gi.err( "ReadEdict: unknown field type" );
     }
 }
 
@@ -451,7 +451,7 @@ void WriteGame( char *filename, qboolean autosave ) {
 
     f = fopen( filename, "wb" );
     if ( !f )
-        gi.error( "Couldn't open %s", filename );
+        gi.err( "Couldn't open %s", filename );
 
     memset( str, 0, sizeof( str ) );
     strcpy( str, __DATE__ );
@@ -475,12 +475,12 @@ void ReadGame( char *filename ) {
 
     f = fopen( filename, "rb" );
     if ( !f )
-        gi.error( "Couldn't open %s", filename );
+        gi.err( "Couldn't open %s", filename );
 
     fread( str, sizeof( str ), 1, f );
     if ( strcmp( str, __DATE__ ) ) {
         fclose( f );
-        gi.error( "Savegame from an older version.\n" );
+        gi.err( "Savegame from an older version.\n" );
     }
 
     g_edicts =
@@ -601,7 +601,7 @@ void WriteLevel( char *filename ) {
 
     f = fopen( filename, "wb" );
     if ( !f )
-        gi.error( "Couldn't open %s", filename );
+        gi.err( "Couldn't open %s", filename );
 
     // write out edict size for checking
     i = sizeof( edict_t );
@@ -653,7 +653,7 @@ void ReadLevel( char *filename ) {
 
     f = fopen( filename, "rb" );
     if ( !f )
-        gi.error( "Couldn't open %s", filename );
+        gi.err( "Couldn't open %s", filename );
 
     // free any dynamic memory allocated by loading the level
     // base state
@@ -667,7 +667,7 @@ void ReadLevel( char *filename ) {
     fread( &i, sizeof( i ), 1, f );
     if ( i != sizeof( edict_t ) ) {
         fclose( f );
-        gi.error( "ReadLevel: mismatched edict size" );
+        gi.err( "ReadLevel: mismatched edict size" );
     }
 
     // check function pointer base address
@@ -675,7 +675,7 @@ void ReadLevel( char *filename ) {
 #ifdef _WIN32
     if ( base != (void *)InitGame ) {
         fclose( f );
-        gi.error( "ReadLevel: function pointers have moved" );
+        gi.err( "ReadLevel: function pointers have moved" );
     }
 #else
     gi.dprintf( "Function offsets %d\n",
@@ -689,7 +689,7 @@ void ReadLevel( char *filename ) {
     while ( 1 ) {
         if ( fread( &entnum, sizeof( entnum ), 1, f ) != 1 ) {
             fclose( f );
-            gi.error( "ReadLevel: failed to read entnum" );
+            gi.err( "ReadLevel: failed to read entnum" );
         }
         if ( entnum == -1 )
             break;

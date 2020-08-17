@@ -142,6 +142,10 @@ keyname_t keynames[] = {
 
     {"MWHEELUP", K_MWHEELUP},
     {"MWHEELDOWN", K_MWHEELDOWN},
+    {"MOUSE4", K_MOUSE4},
+    {"MOUSE5", K_MOUSE5},
+    {"MWHEELLEFT", K_MWHEELLEFT},
+    {"MWHEELRIGHT", K_MWHEELRIGHT},
 
     {"PAUSE", K_PAUSE},
 

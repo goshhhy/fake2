@@ -10,7 +10,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 
 See the GNU General Public License for more details.
 
@@ -33,43 +33,43 @@ http://www.flipcode.com/archives/Texturing_As_In_Unreal.shtml
 
 #if 1
 
-#define DitherKernel2( u, v, X, Y )    \
-    if ( (Y)&1 ) {                     \
-        if ( (X)&1 ) {                 \
-            ( u ) = ( u ) + ( 32768 ); \
-            ( v ) = ( v ) + ( 49152 ); \
-        } else {                       \
-            ( u ) = ( u ) + ( 16384 ); \
-        }                              \
-    } else {                           \
-        if ( (X)&1 ) {                 \
-            ( v ) = ( v ) + ( 32768 ); \
-        } else {                       \
-            ( u ) = ( u ) + ( 49152 ); \
-            ( v ) = ( v ) + ( 16384 ); \
-        }                              \
-    }
+#define DitherKernel2(u, v, X, Y) \
+	if ((Y)&1) { \
+		if ((X)&1) { \
+			(u) = (u) + (32768); \
+			(v) = (v) + (49152); \
+		} else { \
+			(u) = (u) + (16384); \
+		} \
+	} else { \
+		if ((X)&1) { \
+			(v) = (v) + (32768); \
+		} else { \
+			(u) = (u) + (49152); \
+			(v) = (v) + (16384); \
+		} \
+	}
 
 #else
 
-#define DitherKernel2( u, v, X, Y )                    \
-    if ( (Y)&1 ) {                                     \
-        if ( (X)&1 ) {                                 \
-            ( u ) = ( u ) + ( 65536 * 0.50 ); /* 50 */ \
-            ( v ) = ( v ) + ( 65536 * 0.75 ); /* 75 */ \
-        } else {                                       \
-            ( u ) = ( u ) + ( 65536 * 0.25 ); /* 25 */ \
-            ( v ) = ( v ) + ( 65536 * 0.0 );  /* 00 */ \
-        }                                              \
-    } else {                                           \
-        if ( (X)&1 ) {                                 \
-            ( u ) = ( u ) + ( 65536 * 0.0 ); /* 00 */  \
-            ( v ) = ( v ) + ( 65536 * 0.5 ); /* 25 */  \
-        } else {                                       \
-            ( u ) = ( u ) + ( 65536 * 0.75 ); /* 75 */ \
-            ( v ) = ( v ) + ( 65536 * 0.25 ); /* 50 */ \
-        }                                              \
-    }
+#define DitherKernel2(u, v, X, Y) \
+	if ((Y)&1) { \
+		if ((X)&1) { \
+			(u) = (u) + (65536 * 0.50); /* 50 */ \
+			(v) = (v) + (65536 * 0.75); /* 75 */ \
+		} else { \
+			(u) = (u) + (65536 * 0.25); /* 25 */ \
+            (v) = (v) + (65536 * 0.0); /* 00 */ \
+		} \
+	} else { \
+		if ((X)&1) { \
+            (u) = (u) + (65536 * 0.0); /* 00 */ \
+			(v) = (v) + (65536 * 0.5); /* 25 */ \
+		} else { \
+			(u) = (u) + (65536 * 0.75); /* 75 */ \
+			(v) = (v) + (65536 * 0.25); /* 50 */ \
+		} \
+	}
 
 #endif
 

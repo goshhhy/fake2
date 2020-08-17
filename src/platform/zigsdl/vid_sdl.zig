@@ -82,6 +82,31 @@ var s_defaults_action:      c.menuaction_s = undefined;
 extern fn M_ForceMenuOff() void;
 extern fn M_PopMenu() void;
 
+var resolutions = [_]?[*:0]const u8 {
+    "[320 240  ] [4:3  ]",
+    "[400 300  ] [4:3  ]",
+    "[512 384  ] [4:3  ]",
+    "[640 480  ] [4:3  ]",
+    "[800 600  ] [4:3  ]",
+    "[960 720  ] [4:3  ]",
+    "[1024 768 ] [4:3  ]",
+    "[1152 864 ] [4:3  ]",
+    "[1280 1024] [4:3  ]",
+    "[1600 1200] [4:3  ]",
+    "[1280x800 ] [16:10]",
+    "[1440x900 ] [16:10]",
+    "[1680x1050] [16:10]",
+    "[1920x1200] [16:10]",
+    "[1280x720 ] [16:9 ]",
+    "[1366x768 ] [16:9 ]",
+    "[1920x1080] [16:9 ]",
+};
+
+var yesno_names = [_]?[*:0]u8 {
+    "no",
+    "yes",
+};
+
 export fn ScreenSizeCallback( s_optional: ?*c_void ) void {
     if ( s_optional ) |s| {
         const slider = @ptrCast( *c.menuslider_s, @alignCast( @alignOf( c.menuslider_s ), s ) );
@@ -100,24 +125,6 @@ export fn ApplyChanges( s: ?*c_void ) void {
 }
 
 export fn VID_MenuInit() void {
-    var resolutions = [_]?[*:0]u8 {
-        "[320 240  ]",
-        "[400 300  ]",
-        "[512 384  ]",
-        "[640 480  ]",
-        "[800 600  ]",
-        "[960 720  ]",
-        "[1024 768 ]",
-        "[1152 864 ]",
-        "[1280 1024]",
-        "[1600 1200]",
-    };
-    var yesno_names = [_]?[*:0]u8 {
-        "no",
-        "yes",
-        null,
-    };
-
     if ( sw_stipplealpha == null ) {
         sw_stipplealpha = c.Cvar_Get( "sw_stipplealpha", "0", c.CVAR_ARCHIVE );
     }

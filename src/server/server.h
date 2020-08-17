@@ -1,22 +1,4 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+// SPDX-License-Identifier: GPL-2.0-or-later
 // server.h
 
 // define	PARANOID			// speed sapping error checking
@@ -203,10 +185,6 @@ extern edict_t *sv_player;
 void SV_FinalMessage( char *message, bool reconnect );
 void SV_DropClient( client_t *drop );
 
-int SV_ModelIndex( char *name );
-int SV_SoundIndex( char *name );
-int SV_ImageIndex( char *name );
-
 void SV_WriteClientdataToMessage( client_t *client, sizebuf_t *msg );
 
 void SV_ExecuteUserCommand( char *s );
@@ -246,7 +224,7 @@ void SV_Multicast( vec3_t origin, multicast_t to );
 void SV_StartSound( vec3_t origin, edict_t *entity, int channel, int soundindex,
                     float volume, float attenuation, float timeofs );
 void SV_ClientPrintf( client_t *cl, int level, char *fmt, ... );
-void SV_BroadcastPrintf( int level, char *fmt, ... );
+void SV_BroadcastPrintf( int level, const char *fmt, ... );
 void SV_BroadcastCommand( char *fmt, ... );
 
 //

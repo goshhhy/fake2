@@ -258,7 +258,7 @@ void R_AliasPreparePoints(void)
 
 	// put work vertexes on stack, cache aligned
 	pfinalverts = (finalvert_t *)
-		(((long)&finalverts[0] + CACHE_SIZE - 1) & ~(CACHE_SIZE - 1));
+		(((intptr_t)&finalverts[0] + CACHE_SIZE - 1) & ~(CACHE_SIZE - 1));
 
 	aliasbatchedtransformdata.num_points = s_pmdl->num_xyz;
 	aliasbatchedtransformdata.last_verts = r_lastframe->verts;
@@ -1108,8 +1108,7 @@ void R_AliasDrawModel(void)
 	// set up the skin and verify it exists
 	if (!R_AliasSetupSkin())
 	{
-		ri.Con_Printf(PRINT_ALL, "R_AliasDrawModel %s: NULL skin found\n",
-			currentmodel->name);
+		//ri.Con_Printf(PRINT_ALL, "R_AliasDrawModel %s: NULL skin found\n", currentmodel->name);
 		return;
 	}
 

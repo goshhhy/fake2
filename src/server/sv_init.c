@@ -1,74 +1,9 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "server.h"
 
 server_static_t svs;  // persistant server info
 server_t sv;          // local server
-
-/*
-================
-SV_FindIndex
-
-================
-*/
-int SV_FindIndex( char *name, int start, int max, qboolean create ) {
-    int i;
-
-    if ( !name || !name[0] )
-        return 0;
-
-    for ( i = 1; i < max && sv.configstrings[start + i][0]; i++ )
-        if ( !strcmp( sv.configstrings[start + i], name ) )
-            return i;
-
-    if ( !create )
-        return 0;
-
-    if ( i == max )
-        Com_Error( ERR_DROP, "*Index: overflow" );
-
-    strncpy( sv.configstrings[start + i], name, sizeof( sv.configstrings[i] ) );
-
-    if ( sv.state != ss_loading ) {  // send the update to everyone
-        SZ_Clear( &sv.multicast );
-        MSG_WriteChar( &sv.multicast, svc_configstring );
-        MSG_WriteShort( &sv.multicast, start + i );
-        MSG_WriteString( &sv.multicast, name );
-        SV_Multicast( vec3_origin, MULTICAST_ALL_R );
-    }
-
-    return i;
-}
-
-int SV_ModelIndex( char *name ) {
-    return SV_FindIndex( name, CS_MODELS, MAX_MODELS, true );
-}
-
-int SV_SoundIndex( char *name ) {
-    return SV_FindIndex( name, CS_SOUNDS, MAX_SOUNDS, true );
-}
-
-int SV_ImageIndex( char *name ) {
-    return SV_FindIndex( name, CS_IMAGES, MAX_IMAGES, true );
-}
 
 /*
 ================

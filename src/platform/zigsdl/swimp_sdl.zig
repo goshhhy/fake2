@@ -123,6 +123,39 @@ pub fn KeyHandler( scancode: c.SDL_Scancode, pressed: bool ) void {
     Key_Event( key, pressed, 0 );
 }
 
+pub fn MouseHandler( button: u8, pressed: bool ) void {
+    var code: i32 = switch( button ) {
+        c.SDL_BUTTON_LEFT => c.K_MOUSE1,
+        c.SDL_BUTTON_RIGHT => c.K_MOUSE2,
+        c.SDL_BUTTON_MIDDLE => c.K_MOUSE3,
+        c.SDL_BUTTON_X1 => c.K_MOUSE4,
+        c.SDL_BUTTON_X2 => c.K_MOUSE5,
+        else => 0,
+    };
+    if ( code != 0 ) {
+        Key_Event( code, pressed, 0 );
+    }
+}
+
+pub fn WheelHandler( wx: i32, wy: i32 ) void {
+    if ( wy < 0 ) {
+        Key_Event( c.K_MWHEELDOWN, true, 0 );
+        Key_Event( c.K_MWHEELDOWN, false, 0 );
+    } else if ( wy > 0 ) {
+        Key_Event( c.K_MWHEELUP, true, 0 );
+        Key_Event( c.K_MWHEELUP, false, 0 );
+    }
+
+    if ( wx < 0 ) {
+        Key_Event( c.K_MWHEELRIGHT, true, 0 );
+        Key_Event( c.K_MWHEELRIGHT, false, 0 );
+    } else if ( wx > 0 ) {
+        Key_Event( c.K_MWHEELLEFT, true, 0 );
+        Key_Event( c.K_MWHEELLEFT, false, 0 );
+    }
+}
+
+
 // ========================
 // SWimp functions
 // ========================
@@ -139,9 +172,10 @@ export fn SWimp_EndFrame() void {
     var x : usize = 0;
     var y : usize = 0;
 
-    while ( y < @intCast( usize, vid.height ) ) {
+    while ( y < @intCast( usize, vid.height ) ) : ( y += 1 ) {
         //std.debug.warn("\n{}:  ", y );
-        while ( x < @intCast( usize, vid.width ) ) {
+        x = 0;
+        while ( x < @intCast( usize, vid.width ) ) : ( x += 1 ) {
             //std.debug.warn("{} ", x );
             var colorIndex = vid.buffer[ ( y * @intCast( usize, vid.rowbytes ) ) + x ]; 
             var color = currentPalette[colorIndex];
@@ -154,10 +188,7 @@ export fn SWimp_EndFrame() void {
             if ( c.SDL_BlitSurface( pixel, &rect, rsurface, &dest ) != 0 ) {
                 std.debug.warn("blit failed", .{});
             }        
-            x = x + 1;
         }
-        x = 0;
-        y = y + 1;
     }
 
     var rect1 = c.SDL_Rect{ .x = 0, .y = 0, .w = @intCast( c_int, vid.width ), .h = @intCast( c_int, vid.height ) };
@@ -176,6 +207,12 @@ export fn SWimp_EndFrame() void {
             KeyHandler( e.key.keysym.scancode, true );
         } else if ( e.type == c.SDL_KEYUP ) {
             KeyHandler( e.key.keysym.scancode, false );
+        } else if ( e.type == c.SDL_MOUSEBUTTONDOWN ) {
+            MouseHandler( e.button.button, true );
+        } else if ( e.type == c.SDL_MOUSEBUTTONUP ) {
+            MouseHandler( e.button.button, false );
+        } else if ( e.type == c.SDL_MOUSEWHEEL ) {
+            WheelHandler( e.wheel.x, e.wheel.y );
         }
     }
 }
@@ -216,7 +253,7 @@ export fn SWimp_SetPalette( opt_pal: ?*[1024]u8 ) void {
 export fn SWimp_InitGraphics( fullscreen: bool ) bool {
     std.debug.warn("creating window with size {}x{}\n", .{vid.width, vid.height});
 
-    window = c.SDL_CreateWindow( "fake2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 0 ) orelse {
+    window = c.SDL_CreateWindow( "ztech2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 0 ) orelse {
         c.SDL_Log("Unable to create window: %s", c.SDL_GetError());
         return false;
     };
@@ -246,9 +283,9 @@ export fn SWimp_SetMode( pwidth: *u32, pheight: *u32, mode: usize, fullscreen: b
     const bufferLen : usize = @intCast( usize, (pwidth.*) * (pheight.*) );
     const bufferSlice = allocator.alloc( u8, bufferLen ) catch unreachable;
     vid.buffer = bufferSlice.ptr;
-    vid.rowbytes = pwidth.*;
-    vid.width = pwidth.*;
-    vid.height = pheight.*;
+    vid.rowbytes = @intCast(i32, pwidth.*);
+    vid.width = @intCast(i32, pwidth.*);
+    vid.height = @intCast(i32, pheight.*);
     SWimp_Shutdown();
     if ( SWimp_InitGraphics( false ) == false ) {
         std.debug.warn("couldn't set graphics mode", .{});

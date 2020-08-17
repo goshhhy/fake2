@@ -1,22 +1,4 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "server.h"
 
@@ -655,44 +637,7 @@ void Master_Heartbeat( void ) {
         }
 }
 
-/*
-=================
-Master_Shutdown
-
-Informs all masters that this server is going down
-=================
-*/
-void Master_Shutdown( void ) {
-    int i;
-
-    // pgm post3.19 change, cvar pointer not validated before dereferencing
-    if ( !dedicated || !dedicated->value )
-        return;  // only dedicated servers send heartbeats
-
-    // pgm post3.19 change, cvar pointer not validated before dereferencing
-    if ( !public_server || !public_server->value )
-        return;  // a private dedicated game
-
-    // send to group master
-    for ( i = 0; i < MAX_MASTERS; i++ )
-        if ( master_adr[i].port ) {
-            if ( i > 0 )
-                Com_Printf( "Sending heartbeat to %s\n",
-                            NET_AdrToString( master_adr[i] ) );
-            Netchan_OutOfBandPrint( NS_SERVER, master_adr[i], "shutdown" );
-        }
-}
-
-//============================================================================
-
-/*
-=================
-SV_UserinfoChanged
-
-Pull specific info from a newly changed userinfo string
-into a more C freindly form.
-=================
-*/
+/// Pull specific info from a newly changed userinfo string into a more C freindly form.
 void SV_UserinfoChanged( client_t *cl ) {
     char *val;
     int i;
@@ -725,15 +670,7 @@ void SV_UserinfoChanged( client_t *cl ) {
     }
 }
 
-//============================================================================
-
-/*
-===============
-SV_Init
-
-Only called at quake2.exe startup, not for each game
-===============
-*/
+/// called at engine first startup
 void SV_Init( void ) {
     SV_InitOperatorCommands();
 
@@ -774,42 +711,4 @@ void SV_Init( void ) {
     sv_reconnect_limit = Cvar_Get( "sv_reconnect_limit", "3", CVAR_ARCHIVE );
 
     SZ_Init( &net_message, net_message_buffer, sizeof( net_message_buffer ) );
-}
-
-/*
-==================
-SV_FinalMessage
-
-Used by SV_Shutdown to send a final message to all
-connected clients before the server goes down.  The messages are sent
-immediately, not just stuck on the outgoing message list, because the server is
-going to totally exit after returning from this function.
-==================
-*/
-void SV_FinalMessage( char *message, qboolean reconnect ) {
-    int i;
-    client_t *cl;
-
-    SZ_Clear( &net_message );
-    MSG_WriteByte( &net_message, svc_print );
-    MSG_WriteByte( &net_message, PRINT_HIGH );
-    MSG_WriteString( &net_message, message );
-
-    if ( reconnect )
-        MSG_WriteByte( &net_message, svc_reconnect );
-    else
-        MSG_WriteByte( &net_message, svc_disconnect );
-
-    // send it twice
-    // stagger the packets to crutch operating system limited buffers
-
-    for ( i = 0, cl = svs.clients; i < maxclients->value; i++, cl++ )
-        if ( cl->state >= cs_connected )
-            Netchan_Transmit( &cl->netchan, net_message.cursize,
-                              net_message.data );
-
-    for ( i = 0, cl = svs.clients; i < maxclients->value; i++, cl++ )
-        if ( cl->state >= cs_connected )
-            Netchan_Transmit( &cl->netchan, net_message.cursize,
-                              net_message.data );
 }

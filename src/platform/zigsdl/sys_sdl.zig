@@ -6,6 +6,7 @@ const c = @cImport({
 });
 
 const std = @import("std");
+const vid = @import("vid_sdl.zig");
 
 // hunk allocation
 

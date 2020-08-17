@@ -3,10 +3,64 @@ const c = @cImport({
     @cInclude("server/server.h");
 });
 
+const common = @import("qcommon");
+
 extern var hostname: *c.cvar_t;
 extern var maxclients: *c.cvar_t;
+extern var dedicated: ?*c.cvar_t;
+extern var public_server: ?*c.cvar_t;
 
-extern fn Master_Shutdown() void;
+
+// Send a message to the master every few minutes to
+// let it know we are alive, and log information
+fn Master_Heartbeat() void {
+    var string: [*]u8 = null;
+    var string2: [*]u8 = null;
+    var i: usize = 0;
+
+    var nn_dedicated = dedicated orelse return;
+    var nn_public_server = public_server orelse return;
+
+    // check for time wraparound
+    if ( c.svs.last_heartbeat > c.svs.realtime )
+        c.svs.last_heartbeat = c.svs.realtime;
+
+    if ( c.svs.realtime - c.svs.last_heartbeat < (300) * 1000 )
+        return;  // not time to send yet
+
+    c.svs.last_heartbeat = c.svs.realtime;
+
+    // send the same string that we would give for a status OOB command
+    string = SV_StatusString();
+
+    // send to group master
+    while ( i < c.MAX_MASTERS ) : ( i += 1 ) {
+        if ( c.master_adr[i].port != 0 ) {
+            c.Com_Printf( "Sending heartbeat to %s\n", c.NET_AdrToString( master_adr[i] ) );
+            c.Netchan_OutOfBandPrint( c.NS_SERVER, c.master_adr[i], "heartbeat\n%s", string );
+        }
+    }
+}
+
+/// Informs all masters that this server is going down
+export fn Master_Shutdown() void {
+    var i: usize = 0;
+
+    var nn_dedicated = dedicated orelse return;
+    var nn_public_server = public_server orelse return;
+
+    if ( nn_dedicated.*.value == 0 or nn_public_server.*.value == 0 )
+        return;
+
+    // send to group master
+    while ( i < c.MAX_MASTERS ) : ( i += 1 ) {
+        if ( c.master_adr[i].port != 0 ) {
+            if ( i > 0 )
+                c.Com_Printf( "Sending shutdown message to master server %s\n", c.NET_AdrToString( c.master_adr[i] ) );
+            c.Netchan_OutOfBandPrint( c.NS_SERVER, c.master_adr[i], "shutdown" );
+        }
+    }
+}
 
 pub export fn SV_DropClient( drop: *c.client_t ) void {
     c.MSG_WriteByte( &drop.*.netchan.message, c.svc_disconnect );
@@ -104,8 +158,45 @@ pub export fn SVC_Info() void {
                 count += 1;
             }
         }
-        c.Com_sprintf( &string,  64, "%16s %8s %2i/%2i\n", hostname.*.string, 
+        c.Com_sprintf( &string,  64, "%16s %8s %i/%i\n", hostname.*.string, 
                                                             c.sv.name, count, @floatToInt( c_int, maxclients.*.value ) );
     }
     c.Netchan_OutOfBandPrint( c.NS_SERVER, c.net_from, "info\n%s", string );
 }
+
+/// Used by SV_Shutdown to send a final message to all
+/// connected clients before the server goes down.  The messages are sent
+/// immediately, not just stuck on the outgoing message list, because the server is
+/// going to totally exit after returning from this function.
+pub export fn SV_FinalMessage( message: [*:0]u8, reconnect: bool ) void {
+    var i: usize = 0;
+    var cl: [*]c.client_t = c.svs.clients;
+
+    c.SZ_Clear( &c.net_message );
+    c.MSG_WriteByte( &c.net_message, c.svc_print );
+    c.MSG_WriteByte( &c.net_message, c.PRINT_HIGH );
+    c.MSG_WriteString( &c.net_message, message );
+
+    if ( reconnect ) {
+        c.MSG_WriteByte( &c.net_message, c.svc_reconnect );
+    } else {
+        c.MSG_WriteByte( &c.net_message, c.svc_disconnect );
+    }
+    // send it twice
+    // stagger the packets to crutch operating system limited buffers
+
+    while ( i < @floatToInt(usize, maxclients.*.value ) ) : ( i += 1 ) {
+        if ( @enumToInt(cl[i].state) >= c.cs_connected ) {
+            c.Netchan_Transmit( &cl[i].netchan, c.net_message.cursize, c.net_message.data );
+        }
+    }
+
+    i = 0;
+    cl = c.svs.clients;
+    while ( i < @floatToInt(usize, maxclients.*.value ) ) : ( i += 1 ) {
+        if ( @enumToInt(cl[i].state) >= c.cs_connected ) {
+            c.Netchan_Transmit( &cl[i].netchan, c.net_message.cursize, c.net_message.data );
+        }
+    }
+}
+

@@ -102,7 +102,7 @@ qboolean SV_RunThink( edict_t *ent ) {
 
     ent->nextthink = 0;
     if ( !ent->think )
-        gi.error( "NULL ent->think" );
+        gi.err( "NULL ent->think" );
     ent->think( ent );
 
     return false;
@@ -541,7 +541,7 @@ void SV_Physics_Pusher( edict_t *ent ) {
         }
     }
     if ( pushed_p > &pushed[MAX_EDICTS] )
-        gi.error( ERR_FATAL,
+        gi.err( ERR_FATAL,
                   "pushed_p > &pushed[MAX_EDICTS], memory corrupted" );
 
     if ( part ) {
@@ -884,6 +884,6 @@ void G_RunEntity( edict_t *ent ) {
             SV_Physics_Toss( ent );
             break;
         default:
-            gi.error( "SV_Physics: bad movetype %i", (int)ent->movetype );
+            gi.err( "SV_Physics: bad movetype %i", (int)ent->movetype );
     }
 }

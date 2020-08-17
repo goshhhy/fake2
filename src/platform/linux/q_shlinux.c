@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #define _XOPEN_SOURCE 700
 #define _GNU_SOURCE
 
