@@ -172,24 +172,16 @@ export fn SWimp_EndFrame() void {
     var x : usize = 0;
     var y : usize = 0;
 
-    while ( y < @intCast( usize, vid.height ) ) : ( y += 1 ) {
-        //std.debug.warn("\n{}:  ", y );
-        x = 0;
-        while ( x < @intCast( usize, vid.width ) ) : ( x += 1 ) {
-            //std.debug.warn("{} ", x );
-            var colorIndex = vid.buffer[ ( y * @intCast( usize, vid.rowbytes ) ) + x ]; 
-            var color = currentPalette[colorIndex];
-            var rect = c.SDL_Rect{ .x = 0, .y = 0, .w = 1, .h = 1 };
-            if ( c.SDL_FillRect(pixel, &rect, c.SDL_MapRGB(pixel.*.format, color.r, color.g, color.b) ) != 0 ) {
-                 std.debug.warn("fill failed", .{});               
-            }
+    _ = c.SDL_LockSurface(rsurface);
 
-            var dest = c.SDL_Rect{ .x = @intCast( c_int, x ), .y = @intCast( c_int, y ), .w = 1, .h = 1 };
-            if ( c.SDL_BlitSurface( pixel, &rect, rsurface, &dest ) != 0 ) {
-                std.debug.warn("blit failed", .{});
-            }        
-        }
+    while ( x < ( vid.width * vid.height ) ) : ( x += 1 ) {
+            var colorIndex = vid.buffer[ ( y * @intCast( usize, vid.rowbytes ) ) + x ]; 
+            var pixels: [*]u8 = @ptrCast( [*]u8, rsurface.*.pixels );
+
+            pixels[x] = colorIndex;
     }
+
+    c.SDL_UnlockSurface(rsurface);
 
     var rect1 = c.SDL_Rect{ .x = 0, .y = 0, .w = @intCast( c_int, vid.width ), .h = @intCast( c_int, vid.height ) };
     if ( c.SDL_BlitScaled( rsurface, 0, wsurface, 0 ) != 0 ) {
@@ -247,6 +239,7 @@ export fn SWimp_SetPalette( opt_pal: ?*[1024]u8 ) void {
             color.*.b = pal[ ( i * 4 ) + 2 ];
             color.*.a = 255;
         }
+        _ = c.SDL_SetPaletteColors( rsurface.*.format.*.palette, &currentPalette, 0, 256 );
     }
 }
 
@@ -258,8 +251,13 @@ export fn SWimp_InitGraphics( fullscreen: bool ) bool {
         return false;
     };
     wsurface = c.SDL_GetWindowSurface( window );
-    rsurface = c.SDL_CreateRGBSurface( 0,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 );
-    pixel = c.SDL_CreateRGBSurface( 0, 1, 1, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 );
+    if ( wsurface == null )
+        return false;
+    
+    rsurface = c.SDL_CreateRGBSurface( 0,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 8, 0, 0, 0, 0 );
+    if ( rsurface == null )
+        return false;
+
     video.VID_NewWindow ( @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ) );
     return true;
 }
