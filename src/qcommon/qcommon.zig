@@ -1,12 +1,14 @@
 
 const std = @import("std");
 
-const c = @cImport({
-    @cInclude("qcommon.h");
+pub const c = @cImport({
+    @cInclude("qcommon/qcommon.h");
 });
 
+pub const msg = @import("msg.zig");
+
 var platformString: [128:0]u8 = undefined;
-pub export fn GetPlatformString() ?[*:0]u8 {
+pub fn GetPlatformString() ?[*:0]u8 {
     _ = std.fmt.bufPrint( platformString[0..], "ztech2 0.1.0 {}/{}", .{ std.meta.tagName(std.builtin.os.tag), std.meta.tagName(std.builtin.arch) } ) catch return null;
     return &platformString;
 }

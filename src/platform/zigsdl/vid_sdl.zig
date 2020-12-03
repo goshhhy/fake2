@@ -31,16 +31,20 @@ const vid_modes = [_]VidMode {
     VidMode { .desc = "Mode 2: 512x384 [4:3]",      .width =  512, .height =  384, .mode =  2 },
     VidMode { .desc = "Mode 3: 640x480 [4:3]",      .width =  640, .height =  480, .mode =  3 },
     VidMode { .desc = "Mode 4: 800x600 [4:3]",      .width =  800, .height =  600, .mode =  4 },
-    VidMode { .desc = "Mode 6: 1024x768 [4:3]",     .width = 1024, .height =  768, .mode =  6 },
-    VidMode { .desc = "Mode 8: 1280x960 [4:3]",     .width = 1280, .height =  960, .mode =  8 },
-    VidMode { .desc = "Mode 9: 1600x1200 [4:3]",    .width = 1600, .height = 1200, .mode =  9 },
-    VidMode { .desc = "Mode 10: 1280x800 [16:10]",  .width = 1280, .height =  800, .mode = 10 },
-    VidMode { .desc = "Mode 11: 1440x900 [16:10]",  .width = 1440, .height =  900, .mode = 11 },
-    VidMode { .desc = "Mode 12: 1680x1050 [16:10]", .width = 1680, .height = 1050, .mode = 12 },
-    VidMode { .desc = "Mode 13: 1920x1200 [16:10]", .width = 1920, .height = 1200, .mode = 13 },
-    VidMode { .desc = "Mode 14: 1280x720 [16:9]",   .width = 1280, .height =  720, .mode = 14 },
-    VidMode { .desc = "Mode 15: 1366x768 [16:9]",   .width = 1366, .height =  768, .mode = 15 },
-    VidMode { .desc = "Mode 16: 1920x1080 [16:9]",  .width = 1920, .height = 1080, .mode = 16 },
+    VidMode { .desc = "Mode 5: 832x624 [4:3]",      .width =  832, .height =  624, .mode =  5 },
+    VidMode { .desc = "Mode 6: 960x720 [4:3]",      .width =  960, .height =  720, .mode =  6 },
+    VidMode { .desc = "Mode 7: 1024x768 [4:3]",     .width = 1024, .height =  768, .mode =  7 },
+    VidMode { .desc = "Mode 8: 1152x864 [4:3]",     .width = 1152, .height =  864, .mode =  8 },
+    VidMode { .desc = "Mode 9: 1280x960 [4:3]",     .width = 1280, .height =  960, .mode =  9 },
+    VidMode { .desc = "Mode 10: 1600x1200 [4:3]",   .width = 1600, .height = 1200, .mode = 10 },
+    VidMode { .desc = "Mode 11: 1280x1024 [5:4]",   .width = 1280, .height = 1024, .mode = 11 },
+    VidMode { .desc = "Mode 12: 1280x800 [16:10]",  .width = 1280, .height =  800, .mode = 12 },
+    VidMode { .desc = "Mode 13: 1440x900 [16:10]",  .width = 1440, .height =  900, .mode = 13 },
+    VidMode { .desc = "Mode 14: 1680x1050 [16:10]", .width = 1680, .height = 1050, .mode = 14 },
+    VidMode { .desc = "Mode 15: 1920x1200 [16:10]", .width = 1920, .height = 1200, .mode = 15 },
+    VidMode { .desc = "Mode 16: 1280x720 [16:9]",   .width = 1280, .height =  720, .mode = 16 },
+    VidMode { .desc = "Mode 17: 1366x768 [16:9]",   .width = 1366, .height =  768, .mode = 17 },
+    VidMode { .desc = "Mode 18: 1920x1080 [16:9]",  .width = 1920, .height = 1080, .mode = 18 },
 };
 
 pub export fn VID_GetModeInfo( width: ?*u32, height: ?*u32, mode: usize ) c.qboolean {
@@ -88,11 +92,13 @@ var resolutions = [_]?[*:0]const u8 {
     "[512 384  ] [4:3  ]",
     "[640 480  ] [4:3  ]",
     "[800 600  ] [4:3  ]",
+    "[832 624  ] [4:3  ]",
     "[960 720  ] [4:3  ]",
     "[1024 768 ] [4:3  ]",
     "[1152 864 ] [4:3  ]",
-    "[1280 1024] [4:3  ]",
+    "[1280 960 ] [4:3  ]",
     "[1600 1200] [4:3  ]",
+    "[1280 1024] [5:4  ]",
     "[1280x800 ] [16:10]",
     "[1440x900 ] [16:10]",
     "[1680x1050] [16:10]",
@@ -100,11 +106,13 @@ var resolutions = [_]?[*:0]const u8 {
     "[1280x720 ] [16:9 ]",
     "[1366x768 ] [16:9 ]",
     "[1920x1080] [16:9 ]",
+    null
 };
 
 var yesno_names = [_]?[*:0]u8 {
     "no",
     "yes",
+    null
 };
 
 export fn ScreenSizeCallback( s_optional: ?*c_void ) void {

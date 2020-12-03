@@ -1,8 +1,17 @@
-fake2
+ztech2
 ===
 
-a quake 2 engine.
+fork of the idtech2 engine.
 
-features:
-- partly rewritten using [zig](https://ziglang.org) for cleanliness, maintainability, and no undefined behavior
-- that's it so far
+scope of project:
+- fully rewritten in zig for maintainability
+- retain portability of original engine, and expand it where possible
+- support the featureset of both quake1 and quake2's variants of idtech2
+
+not planned:
+- significant visual enhancements for software rendered backends
+
+
+current features:
+- partly rewritten using zig
+- updated software renderer with colored lighting support

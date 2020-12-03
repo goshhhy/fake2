@@ -181,6 +181,8 @@ export fn SWimp_EndFrame() void {
             pixels[x] = colorIndex;
     }
 
+    //std.mem.copy( u8, vid.buffer[0..(x*y)], @ptrCast( [*]u8, rsurface.*.pixels )[0..(x*y)]);
+
     c.SDL_UnlockSurface(rsurface);
 
     var rect1 = c.SDL_Rect{ .x = 0, .y = 0, .w = @intCast( c_int, vid.width ), .h = @intCast( c_int, vid.height ) };

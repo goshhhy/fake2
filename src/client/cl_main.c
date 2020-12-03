@@ -1701,7 +1701,7 @@ void CL_Frame (int msec)
 
     if (cl.reply_delta) {
 		if ( ! ( cls.realtime - cl.reply_time < cl.reply_delta ) ) {
-			Cbuf_AddText( va("say \"%s\"\n", GetPlatformString()) );
+			Cbuf_AddText( va("say \"%s\"\n", "ztech2 0.1.0") );
 			cl.reply_delta = 0 ;
 		}
     }

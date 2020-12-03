@@ -160,7 +160,7 @@ typedef struct {
         const char *name );  // will return 0 0 if not found
     void ( *DrawPic )( uint32_t x, uint32_t y, const char *name );
     void ( *DrawStretchPic )( int x, int y, int w, int h, char *name );
-    void ( *DrawChar )( int x, int y, int c );
+    void ( *DrawChar )( uint32_t x, uint32_t y, uint32_t c );
     void ( *DrawTileClear )( int x, int y, int w, int h, char *name );
     void ( *DrawFill )( int x, int y, int w, int h, int c );
     void ( *DrawFadeScreen )( void );

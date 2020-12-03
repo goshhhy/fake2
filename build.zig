@@ -35,7 +35,6 @@ pub fn build(b: *Builder) void {
         "src/client/cl_ents.c",
         "src/client/cl_fx.c",
         "src/client/cl_input.c",
-        "src/client/cl_inv.c",
         "src/client/cl_main.c",
         "src/client/cl_newfx.c",
         "src/client/cl_parse.c",
@@ -83,6 +82,8 @@ pub fn build(b: *Builder) void {
         ZigSource { .name = "snd", .path = "src/platform/zigsdl/snddma_sdl.zig" },
         ZigSource { .name = "swimp", .path = "src/platform/zigsdl/swimp_sdl.zig" },
         ZigSource { .name = "sys", .path = "src/platform/zigsdl/sys_sdl.zig" },
+
+        ZigSource { .name = "cl_inven", .path = "src/client/inven.zig" },
         //ZigSource { .name = "vid", .path = "src/platform/zignull/vid_null.zig" },
     };
     const server_zig_sources = [_]ZigSource {
