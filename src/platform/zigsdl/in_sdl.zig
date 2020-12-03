@@ -2,7 +2,7 @@
 
 const c = @cImport({
     @cInclude("client/client.h");
-    @cInclude("SDL2/SDL.h");
+    @cInclude("SDL.h");
 });
 
 export var in_joystick: [*c]c.cvar_t = undefined;

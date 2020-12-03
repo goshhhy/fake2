@@ -4,7 +4,7 @@
 const c = @cImport({
     @cInclude("client/client.h");
     @cInclude("client/snd_loc.h");
-    @cInclude("SDL2/SDL.h");
+    @cInclude("SDL.h");
 });
 
 const std = @import("std");

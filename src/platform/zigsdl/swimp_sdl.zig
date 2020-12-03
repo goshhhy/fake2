@@ -3,7 +3,7 @@
 const c = @cImport({
     @cInclude("ref_soft/r_local.h");
     @cInclude("client/keys.h");
-    @cInclude("SDL2/SDL.h");
+    @cInclude("SDL.h");
 });
 
 const std = @import("std");
