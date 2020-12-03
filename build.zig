@@ -13,6 +13,16 @@ pub fn build(b: *Builder) void {
     const client = b.addExecutable("ztech2-client", null);
     const server = b.addExecutable("ztech2-server", null);
 
+    if ( builtin.os.tag == .macos ) {
+        client.addFrameworkDir("/Library/Frameworks");
+        client.addIncludeDir("/Library/Frameworks/SDL2.framework/Headers");
+        client.linkFramework("SDL2");
+    } else if ( builtin.os.tag == .linux ) {
+        client.linkSystemLibrary("x11");
+        client.linkSystemLibrary("wayland-client");
+        client.linkSystemLibrary("SDL2");
+    }
+
     client.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
     server.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
     //const game = b.addSharedLibrary("game", null, b.version(3, 19, 0));
@@ -192,14 +202,21 @@ pub fn build(b: *Builder) void {
     for (client_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
         obj.linkSystemLibrary("c");
-        obj.linkSystemLibrary("wayland-client");
-        obj.linkSystemLibrary("SDL2");
 
         obj.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
 
+        if ( builtin.os.tag == .macos ) {
+            obj.addFrameworkDir("/Library/Frameworks");
+            obj.addIncludeDir("/Library/Frameworks/SDL2.framework/Headers");
+            obj.linkFramework("SDL2");
+        } else if ( builtin.os.tag == .linux ) {
+            obj.linkSystemLibrary("wayland-client");
+            obj.linkSystemLibrary("SDL2");
+        }
+
         obj.addIncludeDir("./src/");
         //obj.setDisableGenH(true);
-         client.addObject(obj);
+        client.addObject(obj);
     }
 
     for (server_zig_sources) |source| {
@@ -226,10 +243,6 @@ pub fn build(b: *Builder) void {
     }
 
     client.linkSystemLibrary("c");
-    client.linkSystemLibrary("x11");
-    client.linkSystemLibrary("wayland-client");
-    client.linkSystemLibrary("SDL2");
-
     server.linkSystemLibrary("c");
 
     const run_step = b.step("run", "Run the app");
