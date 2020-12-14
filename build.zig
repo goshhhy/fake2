@@ -1,5 +1,6 @@
 const Builder = @import("std").build.Builder;
 const Package = @import("std").build.Pkg;
+const std = @import("std");
 const builtin = @import("builtin");
 
 const ZigSource = struct {
@@ -13,6 +14,9 @@ pub fn build(b: *Builder) void {
     const client = b.addExecutable("ztech2-client", null);
     const server = b.addExecutable("ztech2-server", null);
 
+    //const target = std.zig.CrossTarget{ .cpu_arch = .aarch64, .os_tag = .macos };
+    //client.setTarget(target);
+
     if ( builtin.os.tag == .macos ) {
         client.addFrameworkDir("/Library/Frameworks");
         client.addIncludeDir("/Library/Frameworks/SDL2.framework/Headers");
@@ -20,6 +24,11 @@ pub fn build(b: *Builder) void {
     } else if ( builtin.os.tag == .linux ) {
         client.linkSystemLibrary("x11");
         client.linkSystemLibrary("wayland-client");
+        client.linkSystemLibrary("SDL2");
+    } else if ( builtin.os.tag == .windows ) {
+        client.linkSystemLibrary("SDL2");
+    } else {
+        client.linkSystemLibrary("x11");
         client.linkSystemLibrary("SDL2");
     }
 

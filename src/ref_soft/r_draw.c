@@ -41,8 +41,12 @@ image_t *Draw_FindPic(char *name)
 
 	if (name[0] != '/' && name[0] != '\\')
 	{
-		Com_sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
-		image = R_FindImage(fullname, it_pic);
+		//Com_sprintf(fullname, sizeof(fullname), "pics/%s.lmp", name);
+		//image = R_FindImage(fullname, it_pic);
+		//if ( !image ) {
+			Com_sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
+			image = R_FindImage(fullname, it_pic);
+		//}
 	}
 	else
 		image = R_FindImage(name + 1, it_pic);

@@ -866,6 +866,7 @@ void FS_InitFilesystem (void)
 	// start up with baseq2 by default
 	//
 	FS_AddGameDirectory (va("%s/"BASEDIRNAME, fs_basedir->string) );
+	//FS_AddGameDirectory (va("%s/id1", fs_basedir->string) );
 
 	// any set gamedirs will be freed up to here
 	fs_base_searchpaths = fs_searchpaths;

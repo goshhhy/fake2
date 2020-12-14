@@ -66,6 +66,7 @@ int			r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
 qboolean	r_surfsonstack;
 int			r_clipflags;
 
+float 		shadelight[3];
 //
 // view origin
 //
@@ -128,6 +129,7 @@ cvar_t	*sw_reportsurfout;
 cvar_t  *sw_stipplealpha;
 cvar_t	*sw_surfcacheoverride;
 cvar_t	*sw_waterwarp;
+cvar_t  *sw_dither;
 cvar_t  *sw_transmooth; // texture dither //qb: was sw_texturesmooth, but just transparencies
 //cvar_t  *sw_transquality; //qb: from engoo - selects which table to use.
 
@@ -274,6 +276,7 @@ void R_Register(void)
 	sw_surfcacheoverride = ri.Cvar_Get("sw_surfcacheoverride", "0", 0);
 	sw_waterwarp = ri.Cvar_Get("sw_waterwarp", "1", 0);
 	sw_mode = ri.Cvar_Get("sw_mode", "4", CVAR_ARCHIVE);
+	sw_dither = ri.Cvar_Get("sw_dither", "0", CVAR_ARCHIVE);
 	sw_transmooth = ri.Cvar_Get("sw_transmooth", "0", CVAR_ARCHIVE);
 	//sw_transquality = ri.Cvar_Get("sw_transquality", "1", CVAR_ARCHIVE);
 

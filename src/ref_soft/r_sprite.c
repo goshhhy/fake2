@@ -46,15 +46,7 @@ void R_DrawSprite (void)
 
 
 	s_psprite = (dsprite_t *)currentmodel->extradata;
-#if 0
-	if (currententity->frame >= s_psprite->numframes
-		|| currententity->frame < 0)
-	{
-		ri.Con_Printf (PRINT_ALL, "No such sprite frame %i\n", 
-			currententity->frame);
-		currententity->frame = 0;
-	}
-#endif
+	
 	currententity->frame %= s_psprite->numframes;
 
 	s_psprframe = &s_psprite->frames[currententity->frame];

@@ -598,6 +598,7 @@ extern cvar_t   *sw_reportedgeout;
 extern cvar_t   *sw_stipplealpha;
 extern cvar_t   *sw_surfcacheoverride;
 extern cvar_t   *sw_waterwarp;
+extern cvar_t	*sw_dither;
 extern cvar_t   *sw_transmooth; // texture dither on transparencies
 
 extern cvar_t   *r_fullbright;
@@ -642,7 +643,7 @@ extern  vec3_t  modelorg;
 extern  vec3_t  r_entorigin;
 
 
-float	shadelight[3];  //qb: put it here
+extern float	shadelight[3];  //qb: put it here
 
 extern  float   verticalFieldOfView;
 extern  float   xOrigin, yOrigin;

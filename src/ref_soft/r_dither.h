@@ -31,18 +31,18 @@ http://www.flipcode.com/archives/Texturing_As_In_Unreal.shtml
 
 */
 
-#if 1
+#if 0
 
 #define DitherKernel2(u, v, X, Y) \
-	if ((Y)&1) { \
-		if ((X)&1) { \
+	if ((Y)&2) { \
+		if ((X)&2) { \
 			(u) = (u) + (32768); \
 			(v) = (v) + (49152); \
 		} else { \
 			(u) = (u) + (16384); \
 		} \
 	} else { \
-		if ((X)&1) { \
+		if ((X)&2) { \
 			(v) = (v) + (32768); \
 		} else { \
 			(u) = (u) + (49152); \
@@ -53,8 +53,8 @@ http://www.flipcode.com/archives/Texturing_As_In_Unreal.shtml
 #else
 
 #define DitherKernel2(u, v, X, Y) \
-	if ((Y)&1) { \
-		if ((X)&1) { \
+	if ((Y)&4) { \
+		if ((X)&4) { \
 			(u) = (u) + (65536 * 0.50); /* 50 */ \
 			(v) = (v) + (65536 * 0.75); /* 75 */ \
 		} else { \
@@ -62,12 +62,12 @@ http://www.flipcode.com/archives/Texturing_As_In_Unreal.shtml
             (v) = (v) + (65536 * 0.0); /* 00 */ \
 		} \
 	} else { \
-		if ((X)&1) { \
+		if ((X)&4) { \
             (u) = (u) + (65536 * 0.0); /* 00 */ \
-			(v) = (v) + (65536 * 0.5); /* 25 */ \
+			(v) = (v) + (65536 * 0.25); /* 25 */ \
 		} else { \
 			(u) = (u) + (65536 * 0.75); /* 75 */ \
-			(v) = (v) + (65536 * 0.25); /* 50 */ \
+			(v) = (v) + (65536 * 0.50); /* 50 */ \
 		} \
 	}
 

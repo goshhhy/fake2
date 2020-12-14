@@ -480,6 +480,36 @@ image_t *R_LoadWal (char *name)
 	return image;
 }
 
+// R_LoadLmp
+image_t *R_LoadLmp (char *name)
+{
+	lmp_t		*lmp;
+	int			ofs;
+	image_t		*image;
+	int			size;
+
+	ri.FS_LoadFile (name, (void **)&lmp);
+	if (!lmp)
+	{
+		ri.Con_Printf (PRINT_ALL, "R_LoadLmp: can't load %s\n", name);
+		return NULL;
+	}
+
+	image = R_FindFreeImage ();
+	strcpy (image->name, name);
+	image->width = LittleLong (lmp->width);
+	image->height = LittleLong (lmp->height);
+	image->type = it_pic;
+	image->registration_sequence = registration_sequence;
+
+	size = image->width*image->height;
+	image->pixels[0] = malloc (size);
+	memcpy ( image->pixels[0], lmp->pixels, size);
+
+	ri.FS_FreeFile ((void *)lmp);
+
+	return image;
+}
 
 /*
 ===============
@@ -518,19 +548,33 @@ image_t	*R_FindImage (char *name, imagetype_t type)
 	palette = NULL;
 	if (!strcmp(name+len-4, ".pcx"))
 	{
-		LoadPCX (name, &pic, &palette, &width, &height);
-		if (!pic)
-			return NULL;	// ri.Sys_Error (ERR_DROP, "R_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type);
-	}
-	else if (!strcmp(name+len-4, ".wal"))
-	{
-		image = R_LoadWal (name);
-	}
-	else if (!strcmp(name+len-4, ".tga"))
+		char altname[128];
+		memcpy(altname, name, len-4);
+		memcpy(altname + len-4, ".lmp", 5 );
+		image = R_LoadLmp( altname );
+
+		if (!image) {
+			memcpy(altname, "gfx", 3 );
+			memcpy(altname + 3, altname + 4, len - 4);
+			altname[len - 1] = '\0';
+			image = R_LoadLmp( altname );
+		}
+
+		if (!image ) {
+			LoadPCX (name, &pic, &palette, &width, &height);
+			if (!pic)
+				return NULL;	// ri.Sys_Error (ERR_DROP, "R_FindImage: can't load %s", name);
+			image = GL_LoadPic (name, pic, width, height, type);
+		}
+	} else if (!strcmp(name+len-4, ".wal")) {
+		image = R_LoadWal( name );
+	} else if (!strcmp(name+len-4,".lmp")) {
+		image = R_LoadLmp( name );
+	} else if (!strcmp(name+len-4, ".tga")) {
 		return NULL;	// ri.Sys_Error (ERR_DROP, "R_FindImage: can't load %s in software renderer", name);
-	else
+	} else {
 		return NULL;	// ri.Sys_Error (ERR_DROP, "R_FindImage: bad extension on: %s", name);
+	}
 
 	if (pic)
 		free(pic);

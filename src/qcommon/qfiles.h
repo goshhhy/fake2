@@ -191,6 +191,12 @@ typedef struct miptex_s {
     int value;
 } miptex_t;
 
+// .lmp format
+typedef struct lmp_s {
+    unsigned width, height;
+    char pixels[];
+} lmp_t;
+
 /*
 ==============================================================================
 
@@ -202,6 +208,7 @@ typedef struct miptex_s {
 #define IDBSPHEADER ( ( 'P' << 24 ) + ( 'S' << 16 ) + ( 'B' << 8 ) + 'I' )
 // little-endian "IBSP"
 
+#define BSP29 29
 #define BSPVERSION 38
 
 // upper design bounds
