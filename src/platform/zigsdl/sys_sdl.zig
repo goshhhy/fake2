@@ -19,8 +19,8 @@ pub export fn Hunk_Begin( maxSize: u32 ) [*]u8 {
     curHunkSize = 0;
 
     const base = std.os.mmap( null, maxHunkSize, 
-                            std.os.PROT_READ | std.os.PROT_WRITE,
-                            std.os.MAP_PRIVATE | std.os.MAP_ANONYMOUS,
+                            std.os.PROT.READ | std.os.PROT.WRITE,
+                            std.os.MAP.PRIVATE | std.os.MAP.ANONYMOUS,
                             -1, 0 ) catch @panic("Memory allocation failed in Hunk_Begin"); 
 
     memBase = base.ptr;
@@ -58,7 +58,7 @@ pub export fn Hunk_Free( base_optional: ?[*]u8 ) void {
         const mBaseU32Ptr = @ptrCast( [*]u32, @alignCast( 4096, baseAdjust ) );
         const len = mBaseU32Ptr[0];
         const baseSlice = baseAdjust[0..len];
-        std.os.munmap( @alignCast( 4096, baseSlice ) );
+        std.os.munmap( @alignCast( 16384, baseSlice ) );
     }
 }
 
@@ -70,6 +70,7 @@ pub export var sys_frame_time: u64 = 0;
 pub export fn VID_Printf( print_level: c_int, fmt: [*c]u8, args: ?[*]u8 ) void {
     var msg: [4096]u8 = undefined;
 
+    _ = print_level;
     _ = c.sprintf( &msg, fmt, args );
 
     if ( true ) {
@@ -117,8 +118,8 @@ pub export fn Sys_GetClipboardData() [*c]u8 {
 }
 
 pub export fn Sys_Mkdir( path: [*]u8 ) void {
-    std.os.mkdir( path[0..(c.strlen(path))], 0777 ) catch {
-        std.debug.warn("Sys_Mkdir: couldn't make directory {}\n", .{path} );
+    std.os.mkdir( path[0..(c.strlen(path))], 0o755 ) catch {
+        std.debug.print("Sys_Mkdir: couldn't make directory {*}\n", .{path} );
     };
 }
 

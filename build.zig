@@ -9,7 +9,7 @@ const ZigSource = struct {
 };
 
 pub fn build(b: *Builder) void {
-    const mode = builtin.Mode.ReleaseSafe;
+    const mode = b.standardReleaseOptions();
 
     const client = b.addExecutable("ztech2-client", null);
     const server = b.addExecutable("ztech2-server", null);

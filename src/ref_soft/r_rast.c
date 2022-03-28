@@ -73,7 +73,7 @@ medge_t			*r_skyedges;
 int				*r_skysurfedges;
 
 // I just copied this data from a box map...
-int skybox_planes[12] = {2,-128, 0,-128, 2,128, 1,128, 0,128, 1,-128};
+int skybox_planes[12] = {2,-1024, 0,-1024, 2,1024, 1,1024, 0,1024, 1,-1024};
 
 int box_surfedges[24] = { 1,2,3,4,  -1,5,6,7,  8,9,-6,10,  -2,-7,-9,11,
   12,-3,-11,-8,  -12,-10,-5,-4};

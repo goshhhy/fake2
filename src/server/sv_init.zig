@@ -23,7 +23,7 @@ fn FindIndex( name: [*c]const u8, start: usize, max: usize, create: bool ) i32 {
         c.MSG_WriteChar( &c.sv.multicast, c.svc_configstring );
         c.MSG_WriteShort( &c.sv.multicast, @intCast( c_int, start + i ) );
         c.MSG_WriteString( &c.sv.multicast, name );
-        c.SV_Multicast( &c.vec3_origin, @intToEnum( c.multicast_t, c.MULTICAST_ALL_R ) );
+        c.SV_Multicast( &c.vec3_origin, c.MULTICAST_ALL_R );
     }
 
     return @intCast( i32, i );

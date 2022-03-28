@@ -744,7 +744,7 @@ void R_BuildLightMapRGB(void)
 	size = smax*tmax * 3;
 	lightmap = surf->samples;
 
-	Com_Printf("R_BuildLightMapRGB() size %d\n", size);
+	//Com_Printf("R_BuildLightMapRGB() size %d\n", size);
 
 	if (r_fullbright->value || !r_worldmodel->lightdata)
 	{
@@ -788,7 +788,7 @@ void R_BuildLightMapRGB(void)
 	for (i = 0; i < size; i++)
 	{
 		r = blocklights[i];
-		//blocklights[i] = (r < 256) ? 256 : (r > 65536) ? 65536 : r;	// leilei - made min 256 to rid visual artifacts and gain speed
+		blocklights[i] = (r < 256) ? 256 : (r > 65536) ? 65536 : r;	// leilei - made min 256 to rid visual artifacts and gain speed
 	}
 }
 

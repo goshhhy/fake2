@@ -7,7 +7,7 @@ const sv_init = @import ("sv_init.zig");
 
 export var ge: ?*c.game_export_t = null;
 
-fn num_to_edict( n: i32 ) *edict_t {
+fn num_to_edict( n: i32 ) *c.edict_t {
     return ( ge.?.edicts[n] );
 }
 
@@ -110,7 +110,7 @@ export fn PF_Configstring( index: i32, val: [*c]const u8 ) void {
         c.MSG_WriteShort( &c.sv.multicast, index );
         c.MSG_WriteString( &c.sv.multicast, rval );
 
-        c.SV_Multicast( &c.vec3_origin, @intToEnum( c.multicast_t, c.MULTICAST_ALL_R ) );
+        c.SV_Multicast( &c.vec3_origin, c.MULTICAST_ALL_R );
     }
 }
 

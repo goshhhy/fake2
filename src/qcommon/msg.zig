@@ -5,9 +5,9 @@
 const common = @import("qcommon.zig");
 const c = common.c;
 
-pub fn WriteChar( sb: *c.sizebuf_t, c: i32 ) void {
+pub fn WriteChar( sb: *c.sizebuf_t, char: i32 ) void {
     var buf: [*]u8 = c.SZ_GetSpace( sb, 1 );
-    buf[0] = c;
+    buf[0] = char;
 }
 
 pub fn ReadChar( sb: *c.sizebuf_t ) !u8 {
@@ -24,7 +24,6 @@ pub fn ReadShort( sb: *c.sizebuf_t ) !u16 {
         return error.EndOfStream;
     }
     var ret: u16 = sb.*.data[@intCast(usize, sb.*.readcount)];
-    const testest: u16 = 4 << 8;
     ret += @intCast(u16, sb.*.data[@intCast(usize, sb.*.readcount + 1)]) << 8;
 
     sb.*.readcount += 2;

@@ -115,18 +115,20 @@ var yesno_names = [_]?[*:0]u8 {
     null
 };
 
-export fn ScreenSizeCallback( s_optional: ?*c_void ) void {
+export fn ScreenSizeCallback( s_optional: ?*anyopaque ) void {
     if ( s_optional ) |s| {
         const slider = @ptrCast( *c.menuslider_s, @alignCast( @alignOf( c.menuslider_s ), s ) );
         c.Cvar_SetValue( "viewsize", slider.*.curvalue * 10 );
     }
 }
 
-export fn ResetDefaults( s: ?*c_void ) void {
+export fn ResetDefaults( s: ?*anyopaque ) void {
+    _ = s;
     VID_MenuInit();
 }
 
-export fn ApplyChanges( s: ?*c_void ) void {
+export fn ApplyChanges( s: ?*anyopaque ) void {
+    _ = s;
     c.Cvar_SetValue( "sw_stipplealpha", @intToFloat( f32, s_stipple_box.curvalue ) );
     c.Cvar_SetValue( "sw_mode", @intToFloat( f32, s_mode_list.curvalue ) );
     M_ForceMenuOff();

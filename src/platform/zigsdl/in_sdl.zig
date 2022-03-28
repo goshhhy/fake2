@@ -11,6 +11,9 @@ extern var sensitivity: *c.cvar_t;
 var mouse_active: bool = false;
 
 export fn IN_Init(hInstance: usize, wndProc: usize) i32 {
+    _ = wndProc;
+    _ = hInstance;
+
     in_joystick = c.Cvar_Get("in_joystick", "0", c.CVAR_ARCHIVE);
     IN_Activate(true);
     return 1;
@@ -33,6 +36,8 @@ export fn IN_Move(cmd: [*c]c.usercmd_t) void {
     var my: i32 = 0;
     var buttons: u32 = c.SDL_GetRelativeMouseState( &mx, &my );
 
+    _ = cmd;
+
     mx = mx * @floatToInt(i32, sensitivity.value);
     my = my * @floatToInt(i32, sensitivity.value);
 
@@ -54,9 +59,9 @@ export fn IN_Activate(active: bool) void {
 }
 
 export fn IN_ActivateMouse() void {
-    _ = c.SDL_SetRelativeMouseMode(@intToEnum( c.SDL_bool, c.SDL_TRUE ));
+    _ = c.SDL_SetRelativeMouseMode(c.SDL_TRUE );
 }
 
 export fn IN_DeactivateMouse() void {
-    _ = c.SDL_SetRelativeMouseMode(@intToEnum( c.SDL_bool, c.SDL_FALSE ));
+    _ = c.SDL_SetRelativeMouseMode(c.SDL_FALSE);
 }

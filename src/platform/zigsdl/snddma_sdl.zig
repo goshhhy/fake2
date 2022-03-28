@@ -14,8 +14,10 @@ var audio: c.SDL_AudioDeviceID = 0;
 var bufpos: usize = 0;
 var buffer: [32768]u8 = undefined;
 
-export fn fillbuff(udata: ?*c_void, stream: [*c]u8, len: i32) void {
+export fn fillbuff(udata: ?*anyopaque, stream: [*c]u8, len: i32) void {
     var i: usize = 0;
+
+    _ = udata;
 
     while ( i < len ) {
         stream[i] = buffer[bufpos];

@@ -223,12 +223,12 @@ extern oldrefdef_t      r_refdef;
 #define XCENTERING      (1.0 / 2.0)
 #define YCENTERING      (1.0 / 2.0)
 
-#define CLIP_EPSILON            0.001
+#define CLIP_EPSILON            0.0001
 
 #define BACKFACE_EPSILON        0.01
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
-#define NEAR_CLIP       0.01
+#define NEAR_CLIP       0.001
 
 
 #define MAXALIASVERTS           2000    // TODO: tune this

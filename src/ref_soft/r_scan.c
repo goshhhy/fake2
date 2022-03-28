@@ -460,6 +460,8 @@ void D_DrawSpans16(espan_t *pspan) //qb: up it from 8 to 16.  This + unroll = bi
 		if (t < 0) t = 0;
 		else if (t > bbextentt) t = bbextentt;
 
+
+
 		while (count-- > 0) // Manoel Kasimier
 		{
 			sdivz += sdivzstepu;

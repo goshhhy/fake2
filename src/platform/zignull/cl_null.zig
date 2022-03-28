@@ -18,10 +18,12 @@ export fn CL_Drop () void {
 export fn CL_Shutdown () void {
 }
 
-export fn CL_Frame (msec: c_int) void {
+export fn CL_Frame (msec: *anyopaque) void {
+    _ = msec;
 }
 
 export fn Con_Print (text: [*]const u8 ) void {
+    _ = text;
 }
 
 export fn Cmd_ForwardToServer () void
@@ -30,7 +32,9 @@ export fn Cmd_ForwardToServer () void
     c.Com_Printf( "Unknown command \"%s\"\n", cmd );
 }
 
-export fn SCR_DebugGraph (value: f32, color: c_int) void {
+export fn SCR_DebugGraph (value: f32, color: *anyopaque) void {
+    _ = value;
+    _ = color;
 }
 
 export fn SCR_BeginLoadingPlaque () void {

@@ -79,7 +79,7 @@ pub export fn CL_DrawInventory() void {
         var item = index[i];
         // search for a binding
         c.Com_sprintf( &binding, 1024, "use %s",
-                     c.cl.configstrings[c.CS_ITEMS + item] );
+                     c.cl.configstrings[@intCast(usize, c.CS_ITEMS) + item] );
         bind = "";
         var j: usize = 0;
         while ( j < 256 ) : ( j += 1 ) {
@@ -90,7 +90,7 @@ pub export fn CL_DrawInventory() void {
         }
 
         c.Com_sprintf( &string, 1024, "%6s %3i %s", bind,
-                     c.cl.inventory[item], c.cl.configstrings[c.CS_ITEMS + item] );
+                     c.cl.inventory[item], c.cl.configstrings[@intCast(usize, c.CS_ITEMS) + item] );
         if ( item != selected ) {
             SetStringHighBit( &string );
         } else { // draw a blinky cursor by the selected item
