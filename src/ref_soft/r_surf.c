@@ -174,7 +174,7 @@ void R_DrawSurface (void)
 	r_numvblocks = r_drawsurf.surfheight >> blockdivshift;
 
 //==============================
-	if (coloredlights)
+	if (r_coloredlights->value)
 		pblockdrawer = surfmiptable8RGB[r_drawsurf.surfmip];	// leilei - colored lights
 	else
 		pblockdrawer = surfmiptable[r_drawsurf.surfmip];
@@ -203,7 +203,7 @@ void R_DrawSurface (void)
 	for (u=0 ; u<r_numhblocks; u++)
 	{
 			// leilei - colored lights
-		if (coloredlights)
+		if (r_coloredlights->value)
 			r_lightptr = (int*)blocklights + u * 3;
 		else
 			// o^_^o
@@ -703,7 +703,7 @@ surfcache_t *D_CacheSurface (msurface_t *surface, int miplevel)
 	c_surf++;
 
 	// calculate the lightings
-	if (coloredlights)
+	if (r_coloredlights->value)
 		R_BuildLightMapRGB();	// leilei - colored lights
 	else
 		R_BuildLightMap();

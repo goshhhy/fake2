@@ -186,13 +186,17 @@ int RecursiveLightPoint(mnode_t *node, vec3_t start, vec3_t end)
 		if (ds > surf->extents[0] || dt > surf->extents[1])
 			continue;
 
-		if (!surf->samples)
+		if (r_coloredlights)
+			lightmap = surf->csamples;
+		else
+			lightmap = surf->samples;
+
+		if (!lightmap)
 			return 0;
 
 		ds >>= 4;
 		dt >>= 4;
 
-		lightmap = surf->samples;
 		VectorCopy(vec3_origin, pointcolor);
 		if (lightmap)
 		{
@@ -344,13 +348,17 @@ int RecursiveLightPointColor(mnode_t *node, vec3_t start, vec3_t end)
 		if (ds > surf->extents[0] || dt > surf->extents[1])
 			continue;
 
-		if (!surf->samples)
+		if (r_coloredlights)
+			lightmap = surf->csamples;
+		else
+			lightmap = surf->samples;
+
+		if (!lightmap)
 			return 0;
 
 		ds >>= 4;
 		dt >>= 4;
 
-		lightmap = surf->samples;
 		VectorCopy(vec3_origin, pointcolor);
 		if (lightmap)
 		{
@@ -742,11 +750,11 @@ void R_BuildLightMapRGB(void)
 	smax = (surf->extents[0] >> 4) + 1;
 	tmax = (surf->extents[1] >> 4) + 1;
 	size = smax*tmax * 3;
-	lightmap = surf->samples;
+	lightmap = surf->csamples;
 
 	//Com_Printf("R_BuildLightMapRGB() size %d\n", size);
 
-	if (r_fullbright->value || !r_worldmodel->lightdata)
+	if (r_fullbright->value || !r_worldmodel->clightdata)
 	{
 		for (i = 0; i < size; i++){
 			blocklights[i] = 0;

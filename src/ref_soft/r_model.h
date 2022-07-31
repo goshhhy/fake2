@@ -114,6 +114,7 @@ typedef struct msurface_s
 // lighting info
 	byte		styles[MAXLIGHTMAPS];
 	byte		*samples;		// [numstyles*surfsize]
+	byte		*csamples;
 
 	struct msurface_s *nextalphasurface;
 } msurface_t;
@@ -229,6 +230,7 @@ typedef struct model_s
 	dvis_t		*vis;
 
 	byte		*lightdata;
+	byte		*clightdata;
 
 	// for alias models and sprites
 	image_t		*skins[MAX_MD2SKINS];

@@ -325,6 +325,18 @@ since we can support the RGB data now
 =================
 */
 
+void Mod_LoadCLighting(lump_t *l)
+{
+	if (!l->filelen)
+	{
+		loadmodel->clightdata = NULL;
+		return;
+	}
+	loadmodel->clightdata = Hunk_Alloc(l->filelen);
+	memcpy(loadmodel->clightdata, mod_base + l->fileofs, l->filelen);
+
+}
+
 void Mod_LoadRighting(lump_t *l)
 {
 	if (!l->filelen)
@@ -334,7 +346,6 @@ void Mod_LoadRighting(lump_t *l)
 	}
 	loadmodel->lightdata = Hunk_Alloc(l->filelen);
 	memcpy(loadmodel->lightdata, mod_base + l->fileofs, l->filelen);
-
 }
 
 
@@ -700,10 +711,8 @@ void Mod_LoadFaces(lump_t *l)
 			out->samples = NULL;
 		else
 		{
-			if (coloredlights)
-				out->samples = loadmodel->lightdata + i;
-			else
-				out->samples = loadmodel->lightdata + i / 3;
+			out->samples = loadmodel->lightdata + i / 3;
+			out->csamples = loadmodel->clightdata + i;
 		}
 
 		// set the drawing flags flag
@@ -964,7 +973,6 @@ void Mod_LoadBrushModel(model_t *mod, void *buffer)
 	int			i;
 	dheader_t	*header;
 	dmodel_t 	*bm;
-	coloredlights = r_coloredlights->value; // leilei - colored lights - sanity check
 
 	loadmodel->type = mod_brush;
 	if (loadmodel != mod_known)
@@ -987,10 +995,8 @@ void Mod_LoadBrushModel(model_t *mod, void *buffer)
 	Mod_LoadVertexes(&header->lumps[LUMP_VERTEXES]);
 	Mod_LoadEdges(&header->lumps[LUMP_EDGES]);
 	Mod_LoadSurfedges(&header->lumps[LUMP_SURFEDGES]);
-	if (coloredlights)
-		Mod_LoadRighting(&header->lumps[LUMP_LIGHTING]);
-	else
-		Mod_LoadLighting(&header->lumps[LUMP_LIGHTING]);
+	Mod_LoadLighting(&header->lumps[LUMP_LIGHTING]);
+	Mod_LoadCLighting(&header->lumps[LUMP_LIGHTING]);
 	Mod_LoadPlanes(&header->lumps[LUMP_PLANES]);
 	Mod_LoadTexinfo(&header->lumps[LUMP_TEXINFO]);
 	Mod_LoadFaces(&header->lumps[LUMP_FACES]);

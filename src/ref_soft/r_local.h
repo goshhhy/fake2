@@ -651,7 +651,6 @@ extern  float   xOrigin, yOrigin;
 extern  int             r_visframecount;
 
 extern msurface_t *r_alpha_surfaces;
-extern int		coloredlights; //qb: moved here
 
 //=============================================================================
 

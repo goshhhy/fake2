@@ -1192,9 +1192,6 @@ void R_PolysetDrawSpansConstant8_66(spanpackage_t *pspanpackage)
 	} while (pspanpackage->count != -999999);
 }
 
-#if 1 //qb: no asm colored light support was- !id386
-// leilei - colored lighting
-
 void R_PolysetDrawSpans8_Opaque_Coloured(spanpackage_t *pspanpackage)
 {
 
@@ -1230,7 +1227,7 @@ void R_PolysetDrawSpans8_Opaque_Coloured(spanpackage_t *pspanpackage)
 					if (r_newrefdef.rdflags & RDF_IRGOGGLES && currententity->flags & RF_IR_VISIBLE)
 						*lpdest = ((byte *)vid.colormap)[irtable[*lptex]];
 					// leilei - colored lights begin
-					else if (coloredlights)
+					else if (r_coloredlights->value)
 					{
 						int lptemp = *lptex;
 						pix24 = (unsigned char *)&d_8to24table[lptemp];
@@ -1266,7 +1263,6 @@ void R_PolysetDrawSpans8_Opaque_Coloured(spanpackage_t *pspanpackage)
 		pspanpackage++;
 	} while (pspanpackage->count != -999999);
 }
-#endif
 
 
 /*

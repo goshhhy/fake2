@@ -155,7 +155,6 @@ cvar_t  *r_customheight;
 
 cvar_t	*r_coloredlights; // leilei
 cvar_t	*r_lightsaturation; //qb: colored light saturation
-int		coloredlights;	  // leilei
 
 #define	STRINGER(x) "x"
 
@@ -1192,6 +1191,11 @@ void R_BeginFrame(float camera_separation)
 		R_GammaCorrectAndSetPalette((const unsigned char *)d_8to24table);
 
 		vid_gamma->modified = false;
+	}
+
+	if (r_coloredlights->modified) {
+		D_FlushCaches();
+		r_coloredlights->modified = false;
 	}
 
 	while (sw_mode->modified || vid_fullscreen->modified)
