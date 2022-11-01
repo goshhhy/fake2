@@ -104,7 +104,7 @@ pub export fn Sys_GetClipboardData() [*c]u8 {
 }
 
 pub export fn Sys_Mkdir( path: [*]u8 ) void {
-    std.os.mkdir( path[0..(c.strlen(path))], 0777 ) catch {
+    std.os.mkdir( path[0..(c.strlen(path))], 0o777 ) catch {
         std.debug.print("Sys_Mkdir: couldn't make directory {*}\n", .{path} );
     };
 }

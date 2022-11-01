@@ -11,7 +11,6 @@ scope of project:
 not planned:
 - significant visual enhancements for software rendered backends
 
-
 current features:
 - partly rewritten using zig
 - updated software renderer with colored lighting support

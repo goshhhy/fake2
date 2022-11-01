@@ -52,8 +52,8 @@ pub export fn VID_GetModeInfo( width: ?*u32, height: ?*u32, mode: usize ) c.qboo
         return false;
     }
 
-    width.?.* = vid_modes[@intCast(usize, mode)].width;
-    height.?.* = vid_modes[@intCast(usize,mode)].height;
+    width.?.* = vid_modes[@intCast(usize, mode)].width / @floatToInt( u32, sw_pixelscale.?.value);
+    height.?.* = vid_modes[@intCast(usize,mode)].height / @floatToInt( u32, sw_pixelscale.?.value);
 
     return true;
 }
@@ -73,6 +73,7 @@ export fn VID_CheckChanges() void {
 
 extern var vid_ref: ?*c.cvar_t;
 extern var scr_viewsize: ?*c.cvar_t;
+extern var sw_pixelscale: ?*c.cvar_t;
 var sw_mode: ?*c.cvar_t = null;
 var sw_stipplealpha: ?*c.cvar_t = null;
 
@@ -109,8 +110,8 @@ var resolutions = [_]?[*:0]const u8 {
     null
 };
 
-var yesno_names = [_]?[*:0]u8 {
-    "no",
+var yesno_names = [_]?[*:0]const u8 {
+    "no ",
     "yes",
     null
 };
@@ -183,7 +184,7 @@ export fn VID_MenuInit() void {
     s_stipple_box.generic.x    = 0;
     s_stipple_box.generic.y    = 60;
     s_stipple_box.generic.name    = "stipple alpha";
-    s_stipple_box.curvalue = @bitCast( f32, sw_stipplealpha.?.value );
+    s_stipple_box.curvalue = @bitCast( c_int, sw_stipplealpha.?.value );
     s_stipple_box.itemnames = &yesno_names;
 
     c.Menu_AddItem( &s_menu, &s_mode_list );
@@ -212,8 +213,8 @@ export fn VID_MenuDraw() void {
     c.Menu_Draw( &s_menu );
 }
 
-export fn VID_MenuKey(key: i32) ?[*:0]u8 {
-    const sound = "misc/menu1.wav";
+export fn VID_MenuKey(key: i32) ?[*:0]const u8 {
+    var sound = "misc/menu1.wav";
 
     if ( key == c.K_ESCAPE ) {
         M_PopMenu();

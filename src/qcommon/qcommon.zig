@@ -29,3 +29,23 @@ pub fn va( print_level: c_int, fmt: [*c]u8, args: ?[*]u8 ) void {
     }
 }
 
+pub const log_level: std.log.Level = .info;
+
+pub fn log(
+    comptime level: std.log.Level,
+    comptime scope: @TypeOf(.EnumLiteral),
+    comptime format: []const u8,
+    args: anytype,
+) void {
+    const scope_prefix = "(" ++ @tagName(scope) ++ "): ";
+    const prefix = "[" ++ level.asText() ++ "] " ++ scope_prefix;
+    const buf: [256]u8 = undefined;
+    
+    std.fmt.bufPrint(buf, format, args);
+
+    c.Con_Print( buf );
+    std.debug.getStderrMutex().lock();
+    defer std.debug.getStderrMutex().unlock();
+    const stderr = std.io.getStdErr().writer();
+    nosuspend stderr.print(prefix ++ format ++ "\n", args) catch return;
+}

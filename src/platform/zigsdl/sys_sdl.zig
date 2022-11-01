@@ -74,9 +74,9 @@ pub export fn VID_Printf( print_level: c_int, fmt: [*c]u8, args: ?[*]u8 ) void {
     _ = c.sprintf( &msg, fmt, args );
 
     if ( true ) {
-        c.Com_Printf( "VID: %s", msg );
+        c.Com_Printf( "VID: %s", &msg );
     } else {
-        c.Com_DPrintf( "VID: %s", msg );
+        c.Com_DPrintf( "VID: %s", &msg );
     }
 }
 

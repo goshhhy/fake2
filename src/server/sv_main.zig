@@ -3,13 +3,14 @@ const c = @cImport({
     @cInclude("server/server.h");
 });
 
+const std = @import("std");
 const common = @import("qcommon");
+const log = common.log;
 
 extern var hostname: *c.cvar_t;
 extern var maxclients: *c.cvar_t;
 extern var dedicated: ?*c.cvar_t;
 extern var public_server: ?*c.cvar_t;
-
 
 // Send a message to the master every few minutes to
 // let it know we are alive, and log information
@@ -32,7 +33,8 @@ fn Master_Heartbeat() void {
     // send to group master
     while ( i < c.MAX_MASTERS ) : ( i += 1 ) {
         if ( c.master_adr[i].port != 0 ) {
-            c.Com_Printf( "Sending heartbeat to %s\n", c.NET_AdrToString( c.master_adr[i] ) );
+            //c.Com_Printf( "Sending heartbeat to %s\n", c.NET_AdrToString( c.master_adr[i] ) );
+            std.log.info( "Sending heartbeat to {}\n", .{c.NET_AdrToString( c.master_adr[i] )});
             c.Netchan_OutOfBandPrint( c.NS_SERVER, c.master_adr[i], "heartbeat\n%s", string );
         }
     }
@@ -108,7 +110,7 @@ pub export fn SV_StatusString() [*]const u8 {
         if ( (cl.state == c.cs_connected ) or ( cl.state == c.cs_spawned ) ) {
             c.Com_sprintf( &player, 1024, "%i %i \"%s\"\n",
                         cl.edict.*.client.*.ps.stats[c.STAT_FRAGS], cl.ping,
-                        cl.name );
+                        &cl.name );
             playerLength = @intCast(u32, c.strlen( &player ) );
             if ( statusLength + playerLength >= (c.MAX_MSGLEN - 16) )
                 break;  // can't hold any more
@@ -154,9 +156,9 @@ pub export fn SVC_Info() void {
             }
         }
         c.Com_sprintf( &string,  64, "%16s %8s %i/%i\n", hostname.*.string, 
-                                                            c.sv.name, count, @floatToInt( c_int, maxclients.*.value ) );
+                                                            &c.sv.name, count, @floatToInt( c_int, maxclients.*.value ) );
     }
-    c.Netchan_OutOfBandPrint( c.NS_SERVER, c.net_from, "info\n%s", string );
+    c.Netchan_OutOfBandPrint( c.NS_SERVER, c.net_from, "info\n%s", &string );
 }
 
 /// Used by SV_Shutdown to send a final message to all

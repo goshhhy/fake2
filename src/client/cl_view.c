@@ -31,6 +31,7 @@ struct model_s *gun_model;
 //=============
 
 cvar_t *crosshair;
+cvar_t *cl_strafehud;
 cvar_t *cl_testparticles;
 cvar_t *cl_testentities;
 cvar_t *cl_testlights;
@@ -401,10 +402,79 @@ void SCR_DrawCrosshair( void ) {
 
     if ( !crosshair_pic[0] )
         return;
-
+    
     re.DrawPic( scr_vrect.x + ( ( scr_vrect.width - crosshair_width ) >> 1 ),
                 scr_vrect.y + ( ( scr_vrect.height - crosshair_height ) >> 1 ),
                 crosshair_pic );
+}
+
+/*
+=================
+SCR_DrawCrosshair
+=================
+*/
+extern trace_t CL_PMTrace( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end );
+extern int CL_PMpointcontents( vec3_t point );
+
+void SCR_DrawStrafehud( void ) {
+    float vectors[32], angle, adj;
+    float max, min, factor;
+    int i;
+    int y, seglen; 
+
+    //if ( !cl_strafehud->value )
+    //    return;
+
+    angle = (-cl.refdef.fov_x) / 2;
+    adj = ((float)cl.refdef.fov_x) / 32;
+
+    for ( i = 0; i < 32; i++ ) {
+            pmove_t pm;
+            vec3_t origin, out;
+
+            memset( &pm, 0, sizeof( pm ) );
+            pm.trace = CL_PMTrace;
+            pm.pointcontents = CL_PMpointcontents;
+
+            pm_airaccelerate = atof( cl.configstrings[CS_AIRACCEL] );
+
+            pm.s = cl.frame.playerstate.pmove;
+            pm.cmd.angles[YAW] += angle;
+
+            pm.cmd = cl.cmds[0];
+            VectorCopy( pm.s.origin, origin );
+            Pmove( &pm );
+
+            // save for debug checking
+            VectorSubtract( pm.s.origin, origin, out );
+            vectors[i] = VectorLength(pm.s.velocity);
+
+            angle += adj;
+    }
+
+    max = min = 0.0;
+    for ( i = 0; i < 32; i++ ) {
+        if ( max < vectors[i] ) {
+            max = vectors[i];
+        }
+        if ( min > vectors[i]) {
+            min = vectors[i];
+        }
+    }
+
+    max -= min;
+    factor = ( 16 / max );
+    for ( i = 0; i < 32; i++ ) {
+        vectors[i] -= min;
+        vectors[i] *= factor;
+    }
+
+    y = (scr_vrect.height / 2) + 32 + scr_vrect.y;
+    seglen = scr_vrect.width / 32;
+
+    for ( i = 0; i < 32; i++ ) { 
+        re.DrawFill( ( i * seglen ) + scr_vrect.x, y, seglen, 16, vectors[i] );
+    }
 }
 
 /*
@@ -513,6 +583,8 @@ void V_RenderView( float stereo_separation ) {
         fprintf( log_stats_file, "%i,%i,%i,", r_numentities, r_numdlights,
                  r_numparticles );
 
+//    SCR_DrawStrafehud();
+
     SCR_AddDirtyPoint( scr_vrect.x, scr_vrect.y );
     SCR_AddDirtyPoint( scr_vrect.x + scr_vrect.width - 1,
                        scr_vrect.y + scr_vrect.height - 1 );
@@ -544,6 +616,8 @@ void V_Init( void ) {
     Cmd_AddCommand( "viewpos", V_Viewpos_f );
 
     crosshair = Cvar_Get( "crosshair", "0", CVAR_ARCHIVE );
+
+    cl_strafehud = Cvar_Get( "cl_strafehud", "0", 0 );
 
     cl_testblend = Cvar_Get( "cl_testblend", "0", 0 );
     cl_testparticles = Cvar_Get( "cl_testparticles", "0", 0 );

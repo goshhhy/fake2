@@ -14,8 +14,11 @@ const allocator = std.heap.c_allocator;
 const SDL_WINDOWPOS_UNDEFINED = @bitCast(c_int, c.SDL_WINDOWPOS_UNDEFINED_MASK);
 var window: *c.SDL_Window = undefined;
 var wsurface: [*c]c.SDL_Surface = undefined;
+var bsurface: [*c]c.SDL_Surface = undefined;
 var rsurface: [*c]c.SDL_Surface = undefined;
 var pixel: [*c]c.SDL_Surface = undefined;
+export var sw_pixelscale: ?*c.cvar_t = null;
+
 
 var currentPalette: [256]c.SDL_Color = undefined;
 
@@ -188,8 +191,12 @@ export fn SWimp_EndFrame() void {
     c.SDL_UnlockSurface(rsurface);
 
     //var rect1 = c.SDL_Rect{ .x = 0, .y = 0, .w = @intCast( c_int, vid.width ), .h = @intCast( c_int, vid.height ) };
-    if ( c.SDL_BlitScaled( rsurface, 0, wsurface, 0 ) != 0 ) {
-        std.debug.print("warning: blit surface failed\n", .{});
+
+    if ( c.SDL_BlitSurface( rsurface, 0, bsurface, 0 ) != 0 ) {
+        std.debug.print("warning: first blit failed: {s}\n", .{c.SDL_GetError()});
+    }
+    if ( c.SDL_BlitScaled( bsurface, 0, wsurface, 0 ) != 0 ) {
+        std.debug.print("warning: second blit failed: {s}\n", .{c.SDL_GetError()});
     }
 
     if ( c.SDL_UpdateWindowSurface( window ) != 0 ) {
@@ -217,7 +224,7 @@ pub export fn SWimp_SdlLog( userdata: ?*anyopaque, category: i32, priority: c.SD
     _ = priority;
     _ = category;
     _ = userdata;
-    std.debug.print("[SDL]: {s}\n", .{message} );
+    std.debug.print("[SDL]: {s}\n", .{message.?} );
 }
 
 
@@ -234,6 +241,7 @@ export fn SWimp_Init(hInstance: usize, wndProc: usize) i32 {
 
     vid.width = 800;
     vid.height = 600;
+    sw_pixelscale = c.Cvar_Get( "sw_pixelscale", "1", c.CVAR_ARCHIVE );
     if ( SWimp_InitGraphics( false ) == false ) {
         std.debug.print("warning: couldn't set graphics mode\n", .{});
     }
@@ -254,9 +262,14 @@ export fn SWimp_SetPalette( opt_pal: ?*[1024]u8 ) void {
 
 export fn SWimp_InitGraphics( fullscreen: bool ) bool {
     _ = fullscreen;
-    std.debug.print("creating window with size {}x{}\n", .{vid.width, vid.height});
+    var scale: c_int = @floatToInt(c_int, sw_pixelscale.?.value);
+    var w = vid.width * scale;
+    var h = vid.height * scale;
 
-    window = c.SDL_CreateWindow( "ztech2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 0 ) orelse {
+    std.debug.print("creating window with size {}x{}\n", .{w, h});
+
+
+    window = c.SDL_CreateWindow( "ztech2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,  @intCast( c_int, vid.width * scale ),  @intCast( c_int, vid.height * scale), 0 ) orelse {
         c.SDL_Log("Unable to create window: %s", c.SDL_GetError());
         return false;
     };
@@ -264,8 +277,15 @@ export fn SWimp_InitGraphics( fullscreen: bool ) bool {
     if ( wsurface == null )
         return false;
     
+    std.debug.print("creating render surface with size {}x{}\n", .{vid.width, vid.height});
+
+
     rsurface = c.SDL_CreateRGBSurface( 0,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 8, 0, 0, 0, 0 );
     if ( rsurface == null )
+        return false;
+
+    bsurface = c.SDL_CreateRGBSurface( 0,  @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ), 32, 0, 0, 0, 0 );
+    if ( bsurface == null )
         return false;
 
     video.VID_NewWindow ( @intCast( c_int, vid.width ),  @intCast( c_int, vid.height ) );

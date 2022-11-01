@@ -635,8 +635,8 @@ void SV_Physics_Toss( edict_t *ent ) {
             ent->groundentity = NULL;
 
     // if onground, return without moving
-    if ( ent->groundentity )
-        return;
+    //if ( ent->groundentity )
+    //    return;
 
     VectorCopy( ent->s.origin, old_origin );
 

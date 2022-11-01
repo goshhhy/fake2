@@ -257,6 +257,8 @@ void SV_InitGameProgs( void );
 void SV_ShutdownGameProgs( void );
 void SV_InitEdict( edict_t *e );
 
+const char * SV_StatusString();
+
 //============================================================
 
 //

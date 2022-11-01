@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // g_local.h -- local definitions for game module
 
+#define _XOPEN_SOURCE 500
+
 #include "q_shared.h"
 
 // define GAME_INCLUDE so that game.h does not define the

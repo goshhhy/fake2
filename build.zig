@@ -19,7 +19,7 @@ pub fn build(b: *Builder) void {
 
     if ( builtin.os.tag == .macos ) {
         client.addFrameworkDir("/Library/Frameworks");
-        client.addIncludeDir("/Library/Frameworks/SDL2.framework/Headers");
+        client.addIncludePath("/Library/Frameworks/SDL2.framework/Headers");
         client.linkFramework("SDL2");
     } else if ( builtin.os.tag == .linux ) {
         client.linkSystemLibrary("x11");
@@ -191,58 +191,57 @@ pub fn build(b: *Builder) void {
     };
 
     for (client_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8 {"-std=c99", "-g", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
+        client.addCSourceFile(source, &[_][]const u8 {"-std=c99", "-g", "-Og", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
     }
     for (shared_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
-        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DDEDICATED_ONLY", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-Og", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
+        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-Og", "-DDEDICATED_ONLY", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
     }
     for (gamelib_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
-        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DGAME_HARD_LINKED", "-DDEDICATED_ONLY", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-Og", "-DGAME_HARD_LINKED", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
+        server.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-Og", "-DGAME_HARD_LINKED", "-DDEDICATED_ONLY", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
         //game.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g"});
     }
     for (ref_sdl_c_sources) |source| {
-        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-DREF_HARD_LINKED", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
+        client.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g", "-Og", "-DREF_HARD_LINKED", "-fno-sanitize=undefined", "-fno-sanitize-trap=undefined"});
         //ref_sdl.addCSourceFile(source, &[_][]const u8{"-std=c99", "-g"});
     }
 
     // add zig sources for client
     for (client_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
-        obj.linkSystemLibrary("c");
+        obj.linkLibC();
 
         obj.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
 
         if ( builtin.os.tag == .macos ) {
             obj.addFrameworkDir("/Library/Frameworks");
-            obj.addIncludeDir("/Library/Frameworks/SDL2.framework/Headers");
+            obj.addIncludePath("/Library/Frameworks/SDL2.framework/Headers");
             obj.linkFramework("SDL2");
         } else if ( builtin.os.tag == .linux ) {
             obj.linkSystemLibrary("wayland-client");
             obj.linkSystemLibrary("SDL2");
         }
 
-        obj.addIncludeDir("./src/");
+        obj.addIncludePath("./src/");
         //obj.setDisableGenH(true);
         client.addObject(obj);
     }
 
     for (server_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
-        obj.linkSystemLibrary("c");
-        obj.addIncludeDir("./src/");
+        obj.linkLibC();
+        obj.addIncludePath("./src/");
 
         obj.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
-
         //obj.setDisableGenH(true);
         server.addObject(obj);
     }
 
     for (shared_zig_sources) |source| {
         const obj = b.addObject(source.name, source.path);
-        obj.linkSystemLibrary("c");
-        obj.addIncludeDir("./src/");
+        obj.linkLibC();
+        obj.addIncludePath("./src/");
         //obj.setDisableGenH(true);
 
         obj.addPackagePath("qcommon", "src/qcommon/qcommon.zig");
@@ -251,8 +250,8 @@ pub fn build(b: *Builder) void {
         server.addObject(obj);
     }
 
-    client.linkSystemLibrary("c");
-    server.linkSystemLibrary("c");
+    client.linkLibC();
+    server.linkLibC();
 
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
